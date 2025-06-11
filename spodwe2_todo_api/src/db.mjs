@@ -16,14 +16,18 @@ database.exec("PRAGMA cache_size = 10000");
 const createTodosTable = `CREATE TABLE IF NOT EXISTS TODOS (
   id TEXT NOT NULL PRIMARY KEY,
   text TEXT NOT NULL,
-  done BOOLEAN NOT NULL DEFAULT 0
+  done BOOLEAN NOT NULL DEFAULT 0,
+  id_user TEXT NOT NULL,
+  FOREIGN KEY (id_user) REFERENCES USERS(id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
 )`;
 
 const createUsersTable = `CREATE TABLE IF NOT EXISTS USERS (
   id TEXT NOT NULL PRIMARY KEY,
   name TEXT NOT NULL,
   email TEXT NOT NULL UNIQUE,
-  password TEXT NOT NULL
+  password TEXT NOT NULL,
 )`;
 
 const insertSampleData = `INSERT INTO TODOS (id, text, done)
@@ -71,14 +75,21 @@ const getUser = database.prepare(
 );
 
 const insertTodo = database.prepare(
-  "INSERT INTO TODOS (id, text, done) VALUES ($id, $text, 0) RETURNING id, text, done"
+  "INSERT INTO TODOS (id, text, done, id_user) VALUES ($id, $text, 0, $id_user) RETURNING id, text, done"
 );
+
 const updateTodo = database.prepare(
   "UPDATE TODOS SET text = $text, done = $done WHERE id = $id RETURNING id, text, done"
 );
+
 const getTodo = database.prepare(
   `SELECT id, text, done FROM TODOS WHERE id = $id`
 );
-const getAllTodos = database.prepare(`SELECT id, text, done FROM TODOS`);
+
+const getAllTodos = database.prepare(`
+  SELECT id, text, done 
+  FROM TODOS
+  WHERE id_user = $id_user
+`);
 
 export { database, insertTodo, updateTodo, getTodo, getAllTodos, insertUser, getUser };
