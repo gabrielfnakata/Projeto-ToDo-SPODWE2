@@ -1,6 +1,5 @@
-import jwt from "jsonwebtoken";
-
 import { JWT_SECRET_KEY } from "../settings.mjs";
+import jwt from "jsonwebtoken";
 
 export const auth = (req, res, next) => {
   console.log(req.header("Authorization"));

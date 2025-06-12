@@ -20,8 +20,10 @@ export const createTodo = (req, res) => {
   }
 
   const newId = crypto.randomUUID();
-
-  const newTodo = db.insertTodo.get({ $id: newId, $text: text });
+  const newTodo = db.insertTodo.get({ 
+    $id: newId, 
+    $text: text 
+  });
 
   return res.status(200).json({
     id: newTodo.id,
@@ -32,7 +34,6 @@ export const createTodo = (req, res) => {
 
 export const updateTodo = (req, res) => {
   const id = req.params.id;
-
   const todo = db.getTodo.get({ $id: id });
 
   if (!todo) {

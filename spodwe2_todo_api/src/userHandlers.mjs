@@ -1,9 +1,7 @@
+import { JWT_EXPIRATION, JWT_SECRET_KEY } from "./settings.mjs";
+import { insertUser, getUser } from "./db.mjs";
 import * as bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-
-import { JWT_EXPIRATION, JWT_SECRET_KEY } from "./settings.mjs";
-
-import { insertUser, getUser } from "./db.mjs";
 
 export const registerUser = async (req, res) => {
   const { name, email, password } = req.body;
@@ -37,8 +35,11 @@ export const registerUser = async (req, res) => {
     $password: hashedPassword,
   });
   
-  return res.status(201).json({ id: newUser.id, name: newUser.name, email: newUser.email });
-  
+  return res.status(201).json({ 
+    id: newUser.id, 
+    name: newUser.name, 
+    email: newUser.email 
+  });
 };
 
 export const loginUser = async (req, res) => {
@@ -67,7 +68,12 @@ export const loginUser = async (req, res) => {
   }
 
   // Generate JWT token
-   const token = jwt.sign({ user: { id: user.id, email: user.email }}, JWT_SECRET_KEY, { expiresIn: JWT_EXPIRATION});
+   const token = jwt.sign({ 
+    user: { 
+      id: user.id, 
+      email: user.email 
+    }
+  }, JWT_SECRET_KEY, { expiresIn: JWT_EXPIRATION });
 
    res.json({
     email: user.email,

@@ -1,12 +1,9 @@
-import express from "express";
-import cors from "cors";
-
-import { PORT  } from "./settings.mjs";
-
-import { auth } from "./middlewares/auth.mjs";
-
 import { registerUser, loginUser } from "./userHandlers.mjs";
 import * as todosHandlers from "./todosHandlers.mjs";
+import { auth } from "./middlewares/auth.mjs";
+import { PORT  } from "./settings.mjs";
+import express from "express";
+import cors from "cors";
 
 const app = express();
 
