@@ -1,0 +1,15 @@
+{
+  "name": "todo-app",
+  "private": true,
+  "workspaces": [
+    "pacotes/*"
+  ],
+  "scripts": {
+    "start:frontend": "cd pacotes/frontend && npm run dev",
+    "start:backend": "cd pacotes/backend && npm run dev",
+    "dev": "concurrently \"npm run start:backend\" \"npm run start:frontend\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.0.1"
+  }
+}
