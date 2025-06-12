@@ -12,8 +12,8 @@ Um aplicativo de lista de tarefas com autenticação, construído com React, Nod
 
 1. Clone o repositório:
 ```bash
-git clone https://github.com/seu-usuario/todo-app.git
-cd todo-app
+git clone https://github.com/gabrielfnakata/Projeto-ToDo-SPODWE2.git
+cd Projeto-ToDo-SPODWE2
 ```
 
 2. Instale as dependências:
@@ -23,7 +23,7 @@ npm install
 
 3. Instale as dependências dos subprojetos:
 ```bash
-cd packages/frontend
+cd pacotes/frontend
 npm install
 
 cd ../backend
@@ -47,6 +47,6 @@ Isso iniciará:
 Todo_App/
 ├── packages/
 │   ├── frontend/     # Aplicação React
-│   └── backend/      # API Node.js com SQLite
+│   └── backend/      # API Node.js com SQLite3
 └── package.json      # Configuração do monorepo
 ```
