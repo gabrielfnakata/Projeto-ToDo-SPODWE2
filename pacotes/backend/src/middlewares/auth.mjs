@@ -15,11 +15,11 @@ export const auth = (req, res, next) => {
     return res.status(401).json({ error: "Access denied. Invalid authorization scheme." });
 
   if (!token)
-    return res.status(401).json({ error: "Access denied. No token provided." });
+    return res.status(401).json({ error: "Acesso negado. Nenhum token foi informado." });
   
   jwt.verify(token, JWT_SECRET_KEY, (err, decoded) => {
     if (err) {
-      return res.status(401).json({ error: "Invalid token" });
+      return res.status(401).json({ error: "Token inválido" });
     }
     req.user = decoded;
     next();

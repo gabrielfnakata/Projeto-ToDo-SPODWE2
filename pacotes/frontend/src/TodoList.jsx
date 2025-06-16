@@ -3,19 +3,17 @@ import { useState, useEffect } from "react";
 const useAuth = () => {
   const [token, setToken] = useState(null);
 
-  const login = async (email, password) => {
+  const login = async (email, senha) => {
     try {
-      console.log('Tentando login com: ', email);
       const response = await fetch("http://localhost:3000/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json"
-
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, senha: senha }),
       });
-      if (!response.ok) throw new Error('Login failed');
+      if (!response.ok) throw new Error('Login falhou');
   
       const data = await response.json();
       setToken(data.token);
@@ -29,17 +27,17 @@ const useAuth = () => {
 
 const LoginForm = ({ onLogin }) => {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [senha, setSenha] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onLogin(email, password);
+    onLogin(email, senha);
   };
 
   return (
     <form onSubmit={handleSubmit} className="login-form">
       <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
-      <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Senha" />
+      <input type="password" value={senha} onChange={(e) => setSenha(e.target.value)} placeholder="Senha" />
       <button type="submit">Login</button>
     </form>
   ); 
@@ -49,9 +47,9 @@ const AddTodo = ({ addTodo, token }) => {
   const handleKeyPress = async (event) => {
     if (event.key === "Enter") {
       const input = event.target;
-      const text = input.value.trim();
+      const texto = input.value.trim();
 
-      if (text) {
+      if (texto) {
         const newTodo = await fetch("http://localhost:3000/todos", {
           method: "POST",
           headers: {
@@ -59,8 +57,8 @@ const AddTodo = ({ addTodo, token }) => {
             "Authorization": `Bearer ${token}`,
           },
           body: JSON.stringify({
-            text: text,
-            done: false,
+            texto: texto,
+            feito: false,
           }),
         }).then((response) => {
           if (!response.ok) {
@@ -113,11 +111,11 @@ const TodoItem = ({ todo, markTodoAsDone }) => {
 
   return (
     <>
-      {todo.done ? (
-        <li style={{ textDecoration: "line-through" }}>{todo.text}</li>
+      {todo.feito ? (
+        <li style={{ textDecoration: "line-through" }}>{todo.texto}</li>
       ) : (
         <li>
-          {todo.text}
+          {todo.texto}
           <button onClick={handleClick}>Concluir</button>
         </li>
       )}
@@ -132,8 +130,8 @@ const TodoList = () => {
 
   const filterBy = (todo) => {
     if (filter === "all") return true;
-    if (filter === "done") return todo.done;
-    if (filter === "pending") return !todo.done;
+    if (filter === "done") return todo.feito;
+    if (filter === "pending") return !todo.feito;
   };
 
   const applyFilter = (newFilter) => {
@@ -175,11 +173,12 @@ const TodoList = () => {
         "Authorization": `Bearer ${token}`
       },
       body: JSON.stringify({
-        done: true,
+        feito: true,
       }),
     }).then((response) => {
-      if (!response.ok) throw new Error("Erro ao marcar a tarefa como concluída");
-      
+      if (!response.ok) 
+        throw new Error("Erro ao marcar a tarefa como concluída");
+
       return response.json();
     });
 
@@ -187,7 +186,6 @@ const TodoList = () => {
       prevTodos.map((todo) => (todo.id === updatedTodo.id ? updatedTodo : todo))
     );
   };
-
   if (!token) return <LoginForm onLogin={login} />;
 
   return (
@@ -200,15 +198,15 @@ const TodoList = () => {
       <TodoFilter setFilter={applyFilter} />
       <AddTodo addTodo={addTodo} token={token}/>
 
-      {todos ? (
-        <ul id="todo-list">
+      {todos ? 
+        (<ul id="todo-list">
           {todos.filter(filterBy).map((todo, index) => (
             <TodoItem key={index} todo={todo} markTodoAsDone={markTodoAsDone} />
           ))}
         </ul>
-      ) : (
-        <div className="center-content">Carregando...</div>
-      )}
+        ) :
+        (<div className="center-content">Carregando...</div>)
+      }
     </>
   );
 };
