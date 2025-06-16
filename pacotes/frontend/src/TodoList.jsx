@@ -19,6 +19,7 @@ const useAuth = () => {
       setToken(data.token);
     } catch (error) {
       console.error("Login error:", error);
+    throw error;
     }
   };
 
@@ -28,20 +29,46 @@ const useAuth = () => {
 const LoginForm = ({ onLogin }) => {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onLogin(email, senha);
+    setError("");
+    try {
+      await onLogin(email, senha);
+    } catch (error) {
+      setError("Email ou senha inválidos. Por favor, tente novamente.");
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="login-form">
-      <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
-      <input type="password" value={senha} onChange={(e) => setSenha(e.target.value)} placeholder="Senha" />
-      <button type="submit">Login</button>
-    </form>
-  ); 
+    <div className="containers">
+      <div className="heading">Entrar</div>
+      {error && <div className="error-message">{error}</div>}
+      <form className="form" onSubmit={handleSubmit}>
+        <input
+          placeholder="E-mail"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          type="email"
+          className="input"
+          required
+        />
+        <input
+          placeholder="Password"
+          value={senha}
+          onChange={(e) => setSenha(e.target.value)}
+          type="password"
+          className="input"
+          required
+        />
+         <span className="forgot-password"><a href="#">Registre-se</a></span>
+        <button type="submit" className="login-button">Login</button>
+      </form>
+    </div>
+  );
 };
+
 
 const AddTodo = ({ addTodo, token }) => {
   const handleKeyPress = async (event) => {
@@ -192,7 +219,7 @@ const TodoList = () => {
     <>
       <h1>Todo List</h1>
       <div className="center-content">
-        Versão inicial da aplicação de lista de tarefas para a disciplina
+        Versão Final da aplicação de lista de tarefas para a disciplina
         SPODWE2
       </div>
       <TodoFilter setFilter={applyFilter} />
