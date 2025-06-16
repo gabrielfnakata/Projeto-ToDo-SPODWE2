@@ -1,6 +1,6 @@
 # Todo App
 
-Um aplicativo de lista de tarefas com autenticação, construído com React, Node.js e sqlite3.
+Um aplicativo de lista de tarefas com autenticação, construído com React, Node.js e SQLite3.
 
 ## 🚀 Configuração do Projeto
 
@@ -45,7 +45,7 @@ Isso iniciará:
 
 ```
 Todo_App/
-├── packages/
+├── pacotes/
 │   ├── frontend/     # Aplicação React
 │   └── backend/      # API Node.js com SQLite3
 └── package.json      # Configuração do monorepo
