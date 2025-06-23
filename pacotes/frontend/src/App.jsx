@@ -1,11 +1,17 @@
 import "./App.css";
+import { Routes, Route, Navigate } from "react-router-dom";
+import Login from "./Login";
+import Register from "./Register";
 import { TodoList } from "./TodoList";
 
 function App() {
   return (
-    <main className="container">
-      <TodoList />
-    </main>
+    <Routes>
+      <Route path="/" element={<Navigate to="/login" />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/todos" element={<TodoList />} />
+    </Routes>
   );
 }
 

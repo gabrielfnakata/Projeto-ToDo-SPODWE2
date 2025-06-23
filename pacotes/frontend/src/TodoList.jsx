@@ -26,7 +26,7 @@ const useAuth = () => {
   return { token, login };
 };
 
-const LoginForm = ({ onLogin }) => {
+const LoginForm = ({ onLogin , onRegistrar}) => {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [error, setError] = useState("");
@@ -55,20 +55,99 @@ const LoginForm = ({ onLogin }) => {
           required
         />
         <input
-          placeholder="Password"
+          placeholder="Senha"
           value={senha}
           onChange={(e) => setSenha(e.target.value)}
           type="password"
           className="input"
           required
         />
-         <span className="forgot-password"><a href="#">Registre-se</a></span>
+         <span className="forgot-password">
+  <a href="#" onClick={(e) => { e.preventDefault(); onRegistrar(); }}>
+    Registre-se
+  </a>
+</span>
         <button type="submit" className="login-button">Login</button>
       </form>
     </div>
   );
 };
 
+const RegisterForm = ({ onVoltarLogin }) => {
+  const [nome, setNome] = useState("");
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+    try {
+      const response = await fetch("http://localhost:3000/usuarios", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({ nome, email, senha }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || "E-mail já registrado!");
+      }
+
+      setSuccess("Registro concluído!");
+      setNome("");
+      setEmail("");
+      setSenha("");
+    } catch (error) {
+      setError(error.message);
+    }
+  };
+
+  return (
+    <div className="containers">
+      <div className="heading">Registre-se</div>
+      {error && <div className="error-message">{error}</div>}
+      {success && <div style={{ color: "green", textAlign: "center" }}>{success}</div>}
+      <form className="form" onSubmit={handleSubmit}>
+        <input
+          placeholder="Nome"
+          value={nome}
+          onChange={(e) => setNome(e.target.value)}
+          type="text"
+          className="input"
+          required
+        />
+        <input
+          placeholder="E-mail"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          type="email"
+          className="input"
+          required
+        />
+        <input
+          placeholder="Senha"
+          value={senha}
+          onChange={(e) => setSenha(e.target.value)}
+          type="password"
+          className="input"
+          required
+        />
+        <span className="forgot-password">
+          <a href="#" onClick={(e) => { e.preventDefault(); onVoltarLogin(); }}>
+            Voltar para login
+          </a>
+        </span>
+        <button type="submit" className="login-button">Criar conta</button>
+      </form>
+    </div>
+  );
+};
 
 const AddTodo = ({ addTodo, token }) => {
   const handleKeyPress = async (event) => {
@@ -154,6 +233,7 @@ const TodoList = () => {
   const { token, login } = useAuth();
   const [todos, setTodos] = useState([]);
   const [filter, setFilter] = useState("all");
+  const [mostrarRegistro, setMostrarRegistro] = useState(false);
 
   const filterBy = (todo) => {
     if (filter === "all") return true;
@@ -213,8 +293,11 @@ const TodoList = () => {
       prevTodos.map((todo) => (todo.id === updatedTodo.id ? updatedTodo : todo))
     );
   };
-  if (!token) return <LoginForm onLogin={login} />;
-
+  if (!token) {
+    return mostrarRegistro
+      ? <RegisterForm onVoltarLogin={() => setMostrarRegistro(false)} />
+      : <LoginForm onLogin={login} onRegistrar={() => setMostrarRegistro(true)} />;
+  }
   return (
     <>
       <h1>Todo List</h1>
