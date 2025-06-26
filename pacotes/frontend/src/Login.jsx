@@ -21,7 +21,7 @@ const Login = () => {
       if (!response.ok) throw new Error("Erro no login");
 
       const data = await response.json();
-      localStorage.setItem("token", data.token); // salvar token
+      localStorage.setItem("token", data.token); 
       navigate("/todos");
     } catch {
       setError("Email ou senha inválidos.");
