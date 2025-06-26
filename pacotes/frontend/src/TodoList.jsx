@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import NavBar from "./NavBar";
 
 const useAuth = () => {
   const [token, setToken] = useState(() => {
@@ -63,24 +64,25 @@ const AddTodo = ({ addTodo, token }) => {
   }
 };
 
-
-  return (
-    <form onSubmit={handleAdd} style={{ margin: "16px 0" }}>
+ return (
+    <form className="add-todo-form" onSubmit={handleAdd}>
       <input
+        className="add-todo-input"
         type="text"
-        placeholder="Adicione aqui sua nova tarefa"
+        placeholder="Adicione uma tarefa"
         value={texto}
         onChange={(e) => setTexto(e.target.value)}
-        style={{ marginRight: 8 }}
       />
       <input
+        className="add-todo-input"
         type="text"
-        placeholder="Insira sua Tag"
+        placeholder="Adicione uma tag"
         value={tags}
         onChange={(e) => setTags(e.target.value)}
-        style={{ marginRight: 8 }}
       />
-      <button type="submit">Adicionar</button>
+      <button className="add-todo-button" type="submit">
+        Confirmar
+      </button>
     </form>
   );
 };
@@ -88,29 +90,27 @@ const AddTodo = ({ addTodo, token }) => {
 const TodoFilter = ({ setFilter, setTagFilter, tagsDisponiveis }) => {
   const [tag, setTag] = useState("");
 
-  const handleFilterClick = (event) => {
-    event.preventDefault();
-    const filter = event.target.id.replace("filter-", "");
-    setFilter(filter);
+  const handleFilterClick = (e) => {
+    e.preventDefault();
+    const f = e.target.id.replace("filter-", "");
+    setFilter(f);
     setTagFilter("");
   };
 
   const handleTagChange = (e) => {
-    const selectedTag = e.target.value;
-    setTag(selectedTag);
-    setTagFilter(selectedTag);
+    setTag(e.target.value);
+    setTagFilter(e.target.value);
     setFilter("tag");
   };
 
   return (
-    <div className="center-content" style={{ marginBottom: 16 }}>
-      <a href="#" id="filter-all" onClick={handleFilterClick}>Todos os itens</a>
-      <a href="#" id="filter-done" onClick={handleFilterClick} style={{ marginLeft: 8 }}>Concluídos</a>
-      <a href="#" id="filter-pending" onClick={handleFilterClick} style={{ marginLeft: 8 }}>Pendentes</a>
-
-      <select value={tag} onChange={handleTagChange} style={{ marginLeft: 16 }}>
-        <option value="">Todas as Tags</option>
-        {tagsDisponiveis.map((t, i) => (
+    <div className="todo-filter">
+      <button id="filter-all" onClick={handleFilterClick}>todos os itens</button>
+      <button id="filter-done" onClick={handleFilterClick}>concluídos</button>
+      <button id="filter-pending" onClick={handleFilterClick}>pendentes</button>
+      <select className="filter-select" value={tag} onChange={handleTagChange}>
+        <option value="">tags ▾</option>
+        {tagsDisponiveis.map((t,i) => (
           <option key={i} value={t}>{t}</option>
         ))}
       </select>
@@ -118,155 +118,91 @@ const TodoFilter = ({ setFilter, setTagFilter, tagsDisponiveis }) => {
   );
 };
 
-
 const TodoItem = ({ todo, markTodoAsDone }) => {
-  const handleClick = () => {
-    markTodoAsDone(todo.id);
-  };
-
   return (
-    <>
-      {todo.feito ? (
-        <li style={{ textDecoration: "line-through" }}>
-          {todo.texto}
-          {todo.tags && todo.tags.length > 0 && (
-            <span style={{ marginLeft: 8, color: "#888", fontSize: "0.9em" }}>
-              [tags: {todo.tags.join(", ")}]
-            </span>
-          )}
-        </li>
-      ) : (
-        <li>
-          {todo.texto}
-          {todo.tags && todo.tags.length > 0 && (
-            <span style={{ marginLeft: 8, color: "#888", fontSize: "0.9em" }}>
-              [tags: {todo.tags.join(", ")}]
-            </span>
-          )}
-          <button onClick={handleClick} style={{ marginLeft: 8 }}>Concluir</button>
-        </li>
+    <li className={`todo-item${todo.feito ? " done" : ""}`}>
+      <span className="todo-text">{todo.texto}</span>
+      {todo.tags.length > 0 && (
+        <span className="todo-tags">[{todo.tags.join(", ")}]</span>
       )}
-    </>
+      {!todo.feito && (
+        <button className="todo-done-button" onClick={() => markTodoAsDone(todo.id)}>
+          ✓
+        </button>
+      )}
+    </li>
   );
 };
 
-const TodoList = () => {
-  const { token, login } = useAuth();
+export function TodoList() {
+  const { token } = useAuth();
   const [todos, setTodos] = useState([]);
   const [filter, setFilter] = useState("all");
   const [tagFilter, setTagFilter] = useState("");
   const [tagsDisponiveis, setTagsDisponiveis] = useState([]);
 
-  const filterBy = (todo) => {
-    if (filter === "all") return true;
-    if (filter === "done") return todo.feito;
-    if (filter === "pending") return !todo.feito;
+  const filterBy = (t) => {
+    if (filter === "done") return t.feito;
+    if (filter === "pending") return !t.feito;
     return true;
   };
 
-  const applyFilter = (newFilter) => {
-    setFilter(newFilter);
-  };
-
   useEffect(() => {
-    const fetchTodos = async () => {
-      if (!token) return;
-
-      try {
-        let url = "http://localhost:3000/todos";
-        if (filter === "tag" && tagFilter) {
-          url = `http://localhost:3000/todos/por-tag?tag=${encodeURIComponent(tagFilter)}`;
-        }
-        const response = await fetch(url, {
-          headers: {
-            "Authorization": `Bearer ${token}`
-          }
-        });
-        if (!response.ok) throw new Error("Erro ao buscar os dados");
-        
-        const data = await response.json();
-        setTodos(data);
-      } catch (error) {
-        console.error("Erro ao buscar os dados:", error);
+    if (!token) return;
+    (async () => {
+      let url = "http://localhost:3000/todos";
+      if (filter === "tag" && tagFilter) {
+        url = `http://localhost:3000/todos/por-tag?tag=${encodeURIComponent(tagFilter)}`;
       }
-    };
-
-    fetchTodos();
+      const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+      const data = await res.json();
+      setTodos(data);
+    })();
   }, [token, filter, tagFilter]);
 
   useEffect(() => {
-  if (!token) return;
-  const fetchTags = async () => {
-    try {
-      const response = await fetch("http://localhost:3000/tags", {
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
-      });
-      if (!response.ok) throw new Error("Erro ao buscar tags");
-      const tags = await response.json();
+    if (!token) return;
+    (async () => {
+      const res = await fetch("http://localhost:3000/tags", { headers: { Authorization: `Bearer ${token}` } });
+      const tags = await res.json();
       setTagsDisponiveis(tags);
-    } catch (err) {
-      console.error("Erro ao buscar tags:", err);
-    }
-  };
-
-  fetchTags();
-}, [token]);
+    })();
+  }, [token]);
 
   const addTodo = (newTodo) => {
-    setTodos((prevTodos) => [...prevTodos, newTodo]);
-    if (filter === "done") applyFilter("all");
+    setTodos((prev) => [...prev, newTodo]);
+    if (filter === "done") setFilter("all");
   };
 
   const markTodoAsDone = async (id) => {
-    const updatedTodo = await fetch(`http://localhost:3000/todos/${id}`, {
+    const res = await fetch(`http://localhost:3000/todos/${id}`, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        feito: true,
-      }),
-    }).then((response) => {
-      if (!response.ok) 
-        throw new Error("Erro ao marcar a tarefa como concluída");
-
-      return response.json();
+      headers: { "Content-Type":"application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ feito: true }),
     });
-
-    setTodos((prevTodos) =>
-      prevTodos.map((todo) => (todo.id === updatedTodo.id ? updatedTodo : todo))
-    );
+    const updated = await res.json();
+    setTodos((prev) => prev.map(t => t.id===updated.id ? updated : t));
   };
 
   return (
     <>
-      <h1>Todo List</h1>
-      <div className="center-content">
-        Versão Final da aplicação de lista de tarefas para a disciplina
-        SPODWE2
+      <NavBar />
+      <div className="todos-page">
+        <div className="todos-card">
+          <h1 className="todos-header">Nome Todo</h1>
+          <TodoFilter
+            setFilter={setFilter}
+            setTagFilter={setTagFilter}
+            tagsDisponiveis={tagsDisponiveis}
+          />
+          <AddTodo addTodo={addTodo} token={token} />
+          <ul className="todos-list">
+            {todos.filter(filterBy).map((t,i) => (
+              <TodoItem key={i} todo={t} markTodoAsDone={markTodoAsDone} />
+            ))}
+          </ul>
+        </div>
       </div>
-      <TodoFilter 
-        setFilter={applyFilter} 
-        setTagFilter={setTagFilter}
-        tagsDisponiveis={tagsDisponiveis}
-      />
-
-      <AddTodo addTodo={addTodo} token={token}/>
-
-      {todos ? 
-        (<ul id="todo-list">
-          {todos.filter(filterBy).map((todo, index) => (
-            <TodoItem key={index} todo={todo} markTodoAsDone={markTodoAsDone} />
-          ))}
-        </ul>
-        ) :
-        (<div className="center-content">Carregando...</div>)
-      }
     </>
   );
-};
-
-export { TodoList };
+}

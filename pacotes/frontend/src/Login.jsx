@@ -22,7 +22,7 @@ const Login = () => {
 
       const data = await response.json();
       localStorage.setItem("token", data.token); 
-      navigate("/todos");
+      navigate("/home");
     } catch {
       setError("Email ou senha inválidos.");
     }
