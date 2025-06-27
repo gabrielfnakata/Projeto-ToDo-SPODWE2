@@ -1,8 +1,15 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./App.css";
 
 export default function NavBar() {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
+
   return (
     <nav className="navbar">
       <div className="navbar-left">
@@ -15,7 +22,7 @@ export default function NavBar() {
         <button className="nav-button">To-Dos Compartilhadas</button>
       </div>
       <div className="navbar-right">
-        <button className="nav-button">Logout</button>
+        <button className="nav-button" onClick={handleLogout}>Logout</button>
       </div>
     </nav>
   );
