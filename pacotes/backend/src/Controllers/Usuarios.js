@@ -1,4 +1,4 @@
-import { JWT_EXPIRATION, JWT_SECRET_KEY } from "../settings.mjs";
+import { JWT_EXPIRATION, JWT_SECRET_KEY } from "../configDB.js";
 import { db } from '../configDB.js';
 import * as bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -42,7 +42,7 @@ export async function registraUsuario(req, res) {
 
         return res.status(201).json({
             id: novoUsuario.id, 
-            name: novoUsuario.name, 
+            nome: novoUsuario.nome, 
             email: novoUsuario.email 
         });
     } 

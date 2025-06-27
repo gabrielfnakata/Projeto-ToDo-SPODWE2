@@ -1,6 +1,7 @@
 import { criarTabelaUsuarios } from "./Controllers/Usuarios.js";
-import { criarTabelaTodos, criarTabelaTags } from "./Controllers/Todos.js";
-import { PORT } from "./settings.mjs";
+import { criarTabelaTodos } from "./Controllers/Todos.js";
+import { criarTabelaTags } from "./Controllers/Tags.js";
+import { PORT } from "./configDB.js";
 import rotas from "./rotas.js";
 import express from "express";
 import cors from "cors";

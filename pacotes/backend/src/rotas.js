@@ -1,5 +1,6 @@
 import { registraUsuario, loginUsuario, getAllUsuarios } from "./Controllers/Usuarios.js";
-import { allTodos, criaTodo, atualizaTodo, filtrarPorTag, listarTags } from "./Controllers/Todos.js";
+import { allTodos, criaTodo, atualizaTodo } from "./Controllers/Todos.js";
+import { filtrarPorTag, listarTags  } from "./Controllers/Tags.js";
 import { auth } from "./middlewares/auth.mjs";
 import { Router } from "express";
 

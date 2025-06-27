@@ -105,11 +105,11 @@ const TodoFilter = ({ setFilter, setTagFilter, tagsDisponiveis }) => {
 
   return (
     <div className="todo-filter">
-      <button id="filter-all" onClick={handleFilterClick}>todos os itens</button>
-      <button id="filter-done" onClick={handleFilterClick}>concluídos</button>
-      <button id="filter-pending" onClick={handleFilterClick}>pendentes</button>
+      <button id="filter-all" onClick={handleFilterClick}>Todos os Itens</button>
+      <button id="filter-done" onClick={handleFilterClick}>Concluídos</button>
+      <button id="filter-pending" onClick={handleFilterClick}>Pendentes</button>
       <select className="filter-select" value={tag} onChange={handleTagChange}>
-        <option value="">tags ▾</option>
+        <option value="">Tags ▾</option>
         {tagsDisponiveis.map((t,i) => (
           <option key={i} value={t}>{t}</option>
         ))}

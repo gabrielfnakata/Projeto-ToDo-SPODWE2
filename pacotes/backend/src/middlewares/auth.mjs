@@ -1,4 +1,4 @@
-import { JWT_SECRET_KEY } from "../settings.mjs";
+import { JWT_SECRET_KEY } from "../configDB.js";
 import jwt from "jsonwebtoken";
 
 export const auth = (req, res, next) => {
