@@ -21,7 +21,8 @@ export const auth = (req, res, next) => {
     if (err) {
       return res.status(401).json({ error: "Token inválido" });
     }
-    req.user = decoded;
+    
+    req.user = decoded.usuario;
     next();
   });
 };

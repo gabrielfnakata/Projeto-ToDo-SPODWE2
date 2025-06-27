@@ -94,6 +94,29 @@ export async function loginUsuario(req, res) {
     }
 }
 
+export async function getUsuarioAtual(req, res) {
+    try {
+        const idUsuario = req.user.id;
+        if (!idUsuario) {
+            return res.status(401).json({ error: "Usuário não autenticado" });
+        }
+
+        const usuario = await getUsuarioPorId(idUsuario);
+        if (!usuario) {
+            return res.status(404).json({ error: "Usuário não encontrado" });
+        }
+
+        res.json({
+            id: usuario.id,
+            nome: usuario.nome,
+            email: usuario.email
+        });
+    } catch (err) {
+        console.error('Erro ao buscar usuário atual:', err);
+        return res.status(500).json({ error: "Erro interno do servidor" });
+    }
+}
+
 function getUsuarioPorId(id) {
     return new Promise((resolve, reject) => {
         db.get(`SELECT * FROM usuarios WHERE id = ?`, [id], (err, row) => {
