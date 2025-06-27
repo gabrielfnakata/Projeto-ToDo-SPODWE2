@@ -426,3 +426,18 @@ margin-bottom: 10px;
   text-decoration: line-through;
   color: #888;
 }
+
+.todo-start-button {
+  background: #66bb6a; /* verde suave */
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-right: 8px;
+}
+
+.todo-start-button:hover {
+  background: #558b2f; /* verde mais escuro no hover */
+}
