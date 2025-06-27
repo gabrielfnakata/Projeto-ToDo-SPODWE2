@@ -50,7 +50,7 @@ const AddTodo = ({ addTodo, token }) => {
       },
       body: JSON.stringify({
         texto: textoTrim,
-        feito: false,
+        status: "pendente",
         tags: tagsArray,
       }),
     }).then((res) => {
@@ -108,6 +108,7 @@ const TodoFilter = ({ setFilter, setTagFilter, tagsDisponiveis }) => {
       <button id="filter-all" onClick={handleFilterClick}>Todos os Itens</button>
       <button id="filter-done" onClick={handleFilterClick}>Concluídos</button>
       <button id="filter-pending" onClick={handleFilterClick}>Pendentes</button>
+      <button id="filter-em andamento" onClick={handleFilterClick}>Em andamento</button>
       <select className="filter-select" value={tag} onChange={handleTagChange}>
         <option value="">Tags ▾</option>
         {tagsDisponiveis.map((t,i) => (
@@ -118,18 +119,22 @@ const TodoFilter = ({ setFilter, setTagFilter, tagsDisponiveis }) => {
   );
 };
 
-const TodoItem = ({ todo, markTodoAsDone }) => {
+const TodoItem = ({ todo, markTodoAsDone, updateTodoStatus }) => {
   return (
-    <li className={`todo-item${todo.feito ? " done" : ""}`}>
+    <li className={`todo-item ${todo.status === "concluido" ? "done" : ""}`}>
       <span className="todo-text">{todo.texto}</span>
       {todo.tags.length > 0 && (
         <span className="todo-tags">[{todo.tags.join(", ")}]</span>
       )}
-      {!todo.feito && (
-        <button className="todo-done-button" onClick={() => markTodoAsDone(todo.id)}>
-          ✓
-        </button>
-      )}
+      {todo.status === "pendente" && (
+    <>
+      <button className="todo-start-button" onClick={() => updateTodoStatus(todo.id, "em andamento")}>Iniciar tarefa</button>
+      <button className="todo-done-button" onClick={() => updateTodoStatus(todo.id, "concluido")}> ✓</button>
+    </>
+    )}
+    {todo.status === "em andamento" && (
+      <button className="todo-done-button" onClick={() => updateTodoStatus(todo.id, "concluido")}>✓</button>
+    )}
     </li>
   );
 };
@@ -142,9 +147,20 @@ export function TodoList() {
   const [tagsDisponiveis, setTagsDisponiveis] = useState([]);
 
   const filterBy = (t) => {
-    if (filter === "done") return t.feito;
-    if (filter === "pending") return !t.feito;
+    if (filter === "done") return t.status === "concluido";
+    if (filter === "pending") return t.status === "pendente";
+    if (filter === "em andamento") return t.status === "em andamento";
     return true;
+  };
+
+  const updateTodoStatus = async (id, novoStatus) => {
+    const res = await fetch(`http://localhost:3000/todos/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ status: novoStatus }),
+    });
+    const updated = await res.json();
+    setTodos((prev) => prev.map(t => t.id === updated.id ? updated : t));
   };
 
   useEffect(() => {
@@ -178,11 +194,12 @@ export function TodoList() {
     const res = await fetch(`http://localhost:3000/todos/${id}`, {
       method: "PUT",
       headers: { "Content-Type":"application/json", Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ feito: true }),
+      body: JSON.stringify({ status: "concluido" }),
     });
     const updated = await res.json();
-    setTodos((prev) => prev.map(t => t.id===updated.id ? updated : t));
+    setTodos((prev) => prev.map(t => t.id === updated.id ? updated : t));
   };
+
 
   return (
     <>
@@ -198,7 +215,7 @@ export function TodoList() {
           <AddTodo addTodo={addTodo} token={token} />
           <ul className="todos-list">
             {todos.filter(filterBy).map((t,i) => (
-              <TodoItem key={i} todo={t} markTodoAsDone={markTodoAsDone} />
+              <TodoItem key={i} todo={t} markTodoAsDone={markTodoAsDone} updateTodoStatus={updateTodoStatus} />
             ))}
           </ul>
         </div>

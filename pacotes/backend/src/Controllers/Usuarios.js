@@ -2,6 +2,7 @@ import { JWT_EXPIRATION, JWT_SECRET_KEY } from "../configDB.js";
 import { db } from '../configDB.js';
 import * as bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 

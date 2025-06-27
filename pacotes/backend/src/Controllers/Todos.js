@@ -1,12 +1,13 @@
 import { associarTagsAoTodo, buscarTagsDoTodo } from './Tags.js';
 import { db } from '../configDB.js';
+import crypto from "crypto";
 
 export function criarTabelaTodos() {
     db.run(`
         CREATE TABLE IF NOT EXISTS todos (
             id TEXT NOT NULL PRIMARY KEY,
             texto TEXT NOT NULL,
-            feito BOOLEAN NOT NULL DEFAULT 0
+            status TEXT NOT NULL DEFAULT 'pendente'
         )`
     );
 }
@@ -17,7 +18,7 @@ export async function allTodos(req, res) {
     const todosComTags = await Promise.all(allTodos.map(async (todo) => ({
         id: todo.id,
         texto: todo.texto,
-        feito: Boolean(todo.feito),
+        status: todo.status,
         tags: await buscarTagsDoTodo(todo.id)
     })));
     return res.status(200).json(todosComTags);
@@ -43,7 +44,7 @@ export async function criaTodo(req, res) {
     return res.status(200).json({
         id: novoTodo.id,
         texto: novoTodo.texto,
-        feito: Boolean(novoTodo.feito),
+        status: novoTodo.status,
         tags: tagsDoTodo
     });
 }
@@ -56,19 +57,19 @@ export async function atualizaTodo(req, res) {
     }
 
     const isTextoAtualizado = req.body.texto !== undefined && req.body.texto !== null;
-    const isFeitoAtualizado = req.body.feito !== undefined && req.body.feito !== null;
-    if (!isTextoAtualizado && !isFeitoAtualizado && !Array.isArray(req.body.tags)) {
+    const isStatusAtualizado = typeof req.body.status === "string";
+    if (!isTextoAtualizado && !isStatusAtualizado && !Array.isArray(req.body.tags)) {
         return res.status(400).json({ error: "Texto, Feito ou Tags são obrigatórios" });
     }
 
     const textoNovo = isTextoAtualizado ? req.body.texto.trim() : todo.texto;
-    const feitoNovo = isFeitoAtualizado ? Number(req.body.feito) : todo.feito;
+    const statusNovo = isStatusAtualizado ? req.body.status : todo.status;
     if (isTextoAtualizado && textoNovo.length === 0) {
         return res.status(400).json({ error: "O texto não pode ser vazio" });
     }
 
     await new Promise((resolve, reject) => {
-        updateTodo(id, textoNovo, feitoNovo);
+        updateTodo(id, textoNovo, statusNovo);
         resolve();
     });
 
@@ -88,7 +89,7 @@ export async function atualizaTodo(req, res) {
     return res.status(200).json({
         id: todoAtualizado.id,
         texto: todoAtualizado.texto,
-        feito: Boolean(todoAtualizado.feito),
+        status: todoAtualizado.status,
         tags: tagsDoTodo
     });
 }
@@ -116,15 +117,15 @@ function getTodoPorId(id) {
 }
 
 function insertTodo(id, texto) {
-    db.run(
-        'INSERT INTO todos (id, texto, feito) VALUES (?, ?, 0)', 
-        [id, texto]
-    );
+  db.run(
+    'INSERT INTO todos (id, texto, status) VALUES (?, ?, ?)', 
+    [id, texto, 'pendente'] // ✅ adiciona valor para 'status'
+  );
 }
 
-function updateTodo(id, texto, feito) {
+function updateTodo(id, texto, status) {
     db.run(
-        `UPDATE todos SET texto = ?, feito = ? WHERE id = ?`, 
-        [texto, feito, id]
+        `UPDATE todos SET texto = ?, status = ? WHERE id = ?`, 
+        [texto, status, id]
     );
 }
