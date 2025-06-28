@@ -9,6 +9,8 @@ export function criarTabelaTodos() {
             id TEXT NOT NULL PRIMARY KEY,
             texto TEXT NOT NULL,
             status TEXT NOT NULL DEFAULT 'pendente',
+            data_criacao DATETIME DEFAULT CURRENT_TIMESTAMP,
+            data_vencimento DATETIME NOT NULL,
             id_lista TEXT NOT NULL,
             FOREIGN KEY (id_lista) REFERENCES lista_todos(id)
         )`
@@ -23,6 +25,8 @@ export async function allTodos(req, res) {
             id: todo.id,
             texto: todo.texto,
             status: todo.status,
+            data_criacao: todo.data_criacao,
+            data_vencimento: todo.data_vencimento,
             id_lista: todo.id_lista,
             tags: await buscarTagsDoTodo(todo.id)
         })));
@@ -37,17 +41,29 @@ export async function allTodos(req, res) {
 
 export async function criaTodo(req, res) {
     try {
-        const texto = req.body.texto?.trim();
-        const tags = Array.isArray(req.body.tags) ? req.body.tags : [];
         const userId = req.user.id;
-        
+
+        const idNovo = crypto.randomUUID();
+
+        const texto = req.body.texto?.trim();
         if (!texto || texto.length === 0) {
             return res.status(400).json({ error: "O texto é obrigatório" });
         }
 
+        const status = req.body.status || 'pendente';
+        const dataCriacao = req.body.data_criacao || new Date().toISOString();
+
+        let dataVencimento = req.body.data_vencimento;
+        if (!dataVencimento || dataVencimento < dataCriacao) {
+            const dataAtual = new Date();
+            const vencimento = new Date(dataAtual);
+            vencimento.setDate(dataAtual.getDate() + 7);
+            dataVencimento = vencimento.toISOString();
+        }
+        
         let listaId = req.body.id_lista;
         if (!listaId) {
-            listaId = await getOuCriaListaPadrao(userId);
+            listaId = await retornaOuCriaListaPadrao(userId);
         } 
         else {
             const lista = await getListaTodosPorId(listaId);
@@ -56,11 +72,12 @@ export async function criaTodo(req, res) {
             }
         }
 
-        const idNovo = crypto.randomUUID();
         await new Promise((resolve, reject) => {
-            insertTodo(idNovo, texto, listaId);
+            insertTodo(idNovo, texto, status, dataCriacao, dataVencimento, listaId);
             resolve();
         });
+
+        const tags = Array.isArray(req.body.tags) ? req.body.tags : [];
         await associarTagsAoTodo(idNovo, tags);
 
         const novoTodo = await getTodoPorId(idNovo);
@@ -70,12 +87,51 @@ export async function criaTodo(req, res) {
             id: novoTodo.id,
             texto: novoTodo.texto,
             status: novoTodo.status,
+            data_criacao: novoTodo.data_criacao,
+            data_vencimento: novoTodo.data_vencimento,
             id_lista: novoTodo.id_lista,
             tags: tagsDoTodo
         });
     } 
     catch (err) {
         console.error('Erro ao criar todo:', err);
+        return res.status(500).json({ error: "Erro interno do servidor" });
+    }
+}
+
+export async function getTodosVencendo(req, res) {
+    try {
+        const userId = req.user.id;
+
+        const numeroDias = parseInt(req.params.dias);
+        if (isNaN(numeroDias) || numeroDias <= 0) {
+            return res.status(400).json({ error: "Número de dias inválido" });
+        }
+
+        const todos = await getTodosNaoConcluidosPorUsuario(userId);
+        if (todos.length === 0) {
+            return res.status(404).json({ error: "Nenhum todo encontrado" });
+        }
+
+        return res.status(200).json(
+            todos.filter(todo => {
+                const dataVencimento = new Date(todo.data_vencimento);
+                const dataAtual = new Date();
+                const dataLimite = retornaDataComDiasSomados(numeroDias, dataAtual);
+                return dataVencimento >= dataAtual && dataVencimento <= dataLimite;
+            }).map(todo => ({
+                id: todo.id,
+                texto: todo.texto,
+                status: todo.status,
+                data_criacao: todo.data_criacao,
+                data_vencimento: todo.data_vencimento,
+                id_lista: todo.id_lista,
+                tags: buscarTagsDoTodo(todo.id)
+            }))
+        );
+    }
+    catch (err) {
+        console.error('Erro ao buscar todos vencendo:', err);
         return res.status(500).json({ error: "Erro interno do servidor" });
     }
 }
@@ -139,7 +195,7 @@ export async function atualizaTodo(req, res) {
     }
 }
 
-async function getOuCriaListaPadrao(userId) {
+async function retornaOuCriaListaPadrao(userId) {
     const listas = await getListasPorUsuario(userId);
     if (listas.length > 0) {
         return listas[0].id;
@@ -154,17 +210,6 @@ async function getOuCriaListaPadrao(userId) {
     return listaId;
 }
 
-function getAllTodos() {
-    return new Promise((resolve, reject) => {
-        db.all(`SELECT * FROM todos`, (err, rows) => {
-            if (err) {
-                reject(err);
-            }
-            resolve(rows || []);
-        });
-    });
-}
-
 function getTodoPorId(id) {
     return new Promise((resolve, reject) => {
         db.get(`SELECT * FROM todos WHERE id = ?`, [id], (err, row) => {
@@ -176,10 +221,10 @@ function getTodoPorId(id) {
     });
 }
 
-function insertTodo(id, texto, id_lista) {
+function insertTodo(id, texto, status = 'pendente', data_criacao, data_vencimento, id_lista) {
     db.run(
-        'INSERT INTO todos (id, texto, status, id_lista) VALUES (?, ?, ?, ?)', 
-        [id, texto, 'pendente', id_lista]
+        'INSERT INTO todos (id, texto, status, data_criacao, data_vencimento, id_lista) VALUES (?, ?, ?, ?, ?, ?)', 
+        [id, texto, status, data_criacao, data_vencimento, id_lista]
     );
 }
 
@@ -203,4 +248,26 @@ function getTodosPorUsuario(userId) {
             resolve(rows || []);
         });
     });
+}
+
+function getTodosNaoConcluidosPorUsuario(userId) {
+    return new Promise((resolve, reject) => {
+        db.all(`
+            SELECT t.* FROM todos t 
+            INNER JOIN lista_todos l ON t.id_lista = l.id 
+            WHERE l.criador = ? AND t.status != 'concluido'
+        `, [userId], (err, rows) => {
+            if (err) {
+                reject(err);
+            }
+            resolve(rows || []);
+        });
+    });
+}
+
+function retornaDataComDiasSomados(numeroDias, dataInicio = new Date()) {
+    const dataSomada = new Date(dataInicio);
+    dataSomada.setDate(dataInicio.getDate() + numeroDias);
+
+    return dataSomada;
 }

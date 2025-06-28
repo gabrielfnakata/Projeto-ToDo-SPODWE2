@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import NavBar from "./NavBar";
+import { data } from "react-router-dom";
 
 const useAuth = () => {
   const [token, setToken] = useState(() => {
@@ -30,39 +31,40 @@ const useAuth = () => {
   return { token, login };
 };
 
-
-
 const AddTodo = ({ addTodo, token }) => {
   const [texto, setTexto] = useState("");
   const [tags, setTags] = useState("");
+  const [dataVencimento, setDataVencimento] = useState("");
 
   const handleAdd = async (event) => {
-  event.preventDefault();
-  const textoTrim = texto.trim();
-  const tagsArray = tags.split(",").map(t => t.trim()).filter(t => t.length > 0);
+    event.preventDefault();
+    const textoTrim = texto.trim();
+    const tagsArray = tags.split(",").map(t => t.trim()).filter(t => t.length > 0);
 
-  if (textoTrim) {
-    const newTodo = await fetch("http://localhost:3000/todos", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        texto: textoTrim,
-        status: "pendente",
-        tags: tagsArray,
-      }),
-    }).then((res) => {
-      if (!res.ok) throw new Error("Erro ao adicionar a tarefa");
-      return res.json();
-    });
+    if (textoTrim) {
+      const newTodo = await fetch("http://localhost:3000/todos", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          texto: textoTrim,
+          data_criacao: new Date().toISOString(),
+          data_vencimento: new Date(dataVencimento).toISOString(),
+          tags: tagsArray,
+          id_lista: "228d2299-9ec0-40eb-895b-a2a06af84605", // MUDAR PARA O ID DA LISTA ATUAL DO USUARIO
+        }),
+      }).then((res) => {
+        if (!res.ok) throw new Error("Erro ao adicionar a tarefa");
+        return res.json();
+      });
 
-    addTodo(newTodo); 
-    setTexto("");
-    setTags("");
-  }
-};
+      addTodo(newTodo); 
+      setTexto("");
+      setTags("");
+    }
+  };
 
  return (
     <form className="add-todo-form" onSubmit={handleAdd}>
@@ -79,6 +81,13 @@ const AddTodo = ({ addTodo, token }) => {
         placeholder="Adicione uma tag"
         value={tags}
         onChange={(e) => setTags(e.target.value)}
+      />
+      <input
+        className="add-todo-input"
+        type="date"
+        value={dataVencimento}
+        onChange={(e) => setDataVencimento(e.target.value)}
+        min={new Date().toISOString().split('T')[0]}
       />
       <button className="add-todo-button" type="submit">
         Confirmar
@@ -120,11 +129,21 @@ const TodoFilter = ({ setFilter, setTagFilter, tagsDisponiveis }) => {
 };
 
 const TodoItem = ({ todo, markTodoAsDone, updateTodoStatus }) => {
+  const formataData = (data) => {
+    const dataSeparada = data.split("T")[0].split("-");
+    return `${dataSeparada[2]}/${dataSeparada[1]}/${dataSeparada[0]}`
+  };
+
   return (
     <li className={`todo-item ${todo.status === "concluido" ? "done" : ""}`}>
       <span className="todo-text">{todo.texto}</span>
       {todo.tags.length > 0 && (
         <span className="todo-tags">[{todo.tags.join(", ")}]</span>
+      )}
+      {todo.data_vencimento && (
+          <div className="todo-date">
+            📅 Vence em: {formataData(todo.data_vencimento)}
+          </div>
       )}
       {todo.status === "pendente" && (
     <>
@@ -212,10 +231,18 @@ export function TodoList() {
             setTagFilter={setTagFilter}
             tagsDisponiveis={tagsDisponiveis}
           />
-          <AddTodo addTodo={addTodo} token={token} />
+          <AddTodo 
+            addTodo={addTodo} 
+            token={token} 
+          />
           <ul className="todos-list">
             {todos.filter(filterBy).map((t,i) => (
-              <TodoItem key={i} todo={t} markTodoAsDone={markTodoAsDone} updateTodoStatus={updateTodoStatus} />
+              <TodoItem 
+                key={i} 
+                todo={t} 
+                markTodoAsDone={markTodoAsDone} 
+                updateTodoStatus={updateTodoStatus} 
+              />
             ))}
           </ul>
         </div>

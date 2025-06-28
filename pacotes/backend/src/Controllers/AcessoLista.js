@@ -5,6 +5,7 @@ export function criarTabelaAcessoLista() {
         CREATE TABLE IF NOT EXISTS acesso_lista (
             id_lista TEXT NOT NULL,
             id_usuario TEXT NOT NULL,
+            podeEditar BOOLEAN NOT NULL DEFAULT 0,
             PRIMARY KEY (id_lista, id_usuario),
             FOREIGN KEY (id_lista) REFERENCES lista_todos(id),
             FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
