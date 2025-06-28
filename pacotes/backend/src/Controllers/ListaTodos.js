@@ -11,6 +11,46 @@ export function criarTabelaListaTodos() {
     );
 }
 
+export function criaNovaLista(req, res) {
+    try {
+        const { nome } = req.body;
+        const userId = req.body.criador || req.user.id;
+        if (!nome || nome.trim().length === 0) {
+            return res.status(400).json({ error: "O nome da lista é obrigatório" });
+        }
+        if (!userId || userId.trim().length === 0) {
+            return res.status(400).json({ error: "O id do criador da lista é obrigatório" });
+        }
+
+        const id = crypto.randomUUID();
+        insertListaTodos(id, nome.trim(), userId);
+    }
+    catch (err) {
+        console.error('Erro ao criar nova lista:', err);
+        return res.status(500).json({ error: "Erro interno do servidor" });
+    }
+}
+
+export async function retornaTodasAsListasDoUsuarioAtual(req, res) {
+    try {
+        const userId = req.user.id;
+        if (!userId) {
+            return res.status(400).json({ error: "Usuário não autenticado" });
+        }
+
+        const listas = await getListasPorUsuario(userId);
+        if (listas.length === 0) {
+            return res.status(404).json({ message: "Nenhuma lista encontrada para o usuário" });
+        }
+
+        return res.status(200).json(listas);
+    } 
+    catch (err) {
+        console.error('Erro ao buscar listas do usuário:', err);
+        return res.status(500).json({ error: "Erro interno do servidor" });
+    }
+}
+
 export function getListasPorUsuario(userId) {
     return new Promise((resolve, reject) => {
         db.all(`SELECT * FROM lista_todos WHERE criador = ?`, [userId], (err, rows) => {
@@ -38,15 +78,4 @@ export function insertListaTodos(id, nome, criador) {
         `INSERT INTO lista_todos (id, nome, criador) VALUES (?, ?, ?)`, 
         [id, nome, criador]
     );
-}
-
-function getAllListaTodos() {
-    return new Promise((resolve, reject) => {
-        db.all(`SELECT * FROM lista_todos`, (err, rows) => {
-            if (err) {
-                reject(err);
-            }
-            resolve(rows || null);
-        });
-    });
 }
