@@ -21,15 +21,6 @@ cd Projeto-ToDo-SPODWE2
 npm install
 ```
 
-3. Instale as dependências dos subprojetos:
-```bash
-cd pacotes/frontend
-npm install
-
-cd ../backend
-npm install
-```
-
 ### Executando o Projeto
 
 Na pasta raiz do projeto, execute:
