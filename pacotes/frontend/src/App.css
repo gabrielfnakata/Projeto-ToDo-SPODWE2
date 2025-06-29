@@ -37,7 +37,7 @@ button:hover {
 }
 input[type="text"] {
   width: calc(100% - 22px);
-  padding: 10px;
+  height: 10px;
   margin: 10px 0;
   border: 1px solid #ccc;
   border-radius: 3px;
@@ -240,6 +240,9 @@ margin-bottom: 10px;
   display: flex;
   align-items: center;
   gap: 12px;
+  font-size: 1em;
+  font-weight: bold;
+  color: #ffffff;
 }
 
 .logo {
@@ -254,7 +257,7 @@ margin-bottom: 10px;
   border: none;
   border-radius: 6px;
   padding: 12px 24px;    
-  font-size: 1.5rem;      
+  font-size: 1.2rem;      
   margin-right: 12px;
   cursor: pointer;
   font-weight: bold;
@@ -268,35 +271,58 @@ margin-bottom: 10px;
 .nav-button:last-child {
   margin-right: 0;
 }
+/* App.css */
 
+/* container horizontal scroll */
 .todo-container {
   display: flex;
-  flex-wrap: wrap;          
+  flex-direction: row;
+  align-items: flex-start;
   gap: 24px;
-  padding-top: auto;        
-  justify-content: center;
+  padding: 200px 24px 24px; /* ajusta padding-top conforme navbar */
+  overflow-x: auto;          /* permite rolar na direção horizontal */
+  scrollbar-width: thin;     /* Firefox */
 }
+.todo-container::-webkit-scrollbar {
+  height: 8px;
+}
+.todo-container::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.2);
+  border-radius: 4px;
+}
+
+/* cards fixos (não encolhem) */
 .todo-card {
-  flex: 1 1 320px;     
-  max-width: 400px;    
-  min-height: 440px;
+  flex: 0 0 auto;
   background: #fff;
   width: 360px;
   min-height: 440px;
   border-radius: 12px;
   box-shadow: 0 8px 10px rgba(0,0,0,0.08);
   padding: 24px;
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  transform-origin: center top;
-  z-index: 1;
+  transition: transform 0.2s ease;
+  cursor: pointer;
+}
+.todo-card:hover {
+  transform: scale(1.03);
 }
 
-.todo-card:hover {
-  transform: scale(1.05);        
-  box-shadow: 0 12px 16px rgba(0,0,0,0.12);
-  z-index: 10;                 
+/* card “+” */
+.add-card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #66bb6a;
+}
+.add-card .add-icon {
+  font-size: 3rem;
+  color: #fff;
+  line-height: 1;
+}
+
+/* remova o flex-wrap anterior se existir */
+.todo-container {
+  flex-wrap: nowrap;
 }
 
 .todo-card h2 {
@@ -316,7 +342,7 @@ margin-bottom: 10px;
 
 .todos-card {
   background: #fff;
-  width: 400px;
+  width: auto;
   height: auto;
   border-radius: 12px;
   box-shadow: 0 8px 12px rgba(0,0,0,0.1);
@@ -364,6 +390,7 @@ margin-bottom: 10px;
   display: flex;
   gap: 8px;
   margin-bottom: 16px;
+  
 }
 .add-todo-input {
   flex: 1;
@@ -440,4 +467,221 @@ margin-bottom: 10px;
 
 .todo-start-button:hover {
   background: #558b2f; /* verde mais escuro no hover */
+}
+
+.small-card {
+  width: 200px;
+  min-height: 260px;
+  padding: 16px;
+}
+
+.small-icon {
+  font-size: 2rem;
+}
+
+.form-card {
+  background: #fff;
+  width: 360px;
+  border-radius: 12px;
+  box-shadow: 0 8px 12px rgba(0,0,0,0.1);
+  padding: 24px;
+  margin-bottom: 32px;
+  margin-top: 100px;
+}
+
+.create-todo-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-label {
+  display: flex;
+  flex-direction: column;
+  font-weight: bold;
+  color: #162931;
+}
+
+.form-input {
+  margin-top: 8px;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.btn-primary, .btn-secondary {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-primary {
+  background: #607d8b;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: #546e7a;
+}
+
+.btn-secondary {
+  background: #eceff1;
+  color: #162931;
+}
+
+.btn-secondary:hover {
+  background: #cfd8dc;
+}
+
+/* ensure the form is centered below navbar */
+.todos-page {
+  background: #f4f4f4;
+  min-height: 100vh;
+  padding-top: 100px; /* adjust to navbar height */
+  display: flex;
+  justify-content: center;
+  align-items: start;
+}
+  .create-list-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-error {
+  color: #ff6b6b;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.form-label {
+  display: flex;
+  flex-direction: column;
+  font-weight: bold;
+  color: #162931;
+}
+
+.form-input {
+  margin-top: 8px;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-help {
+  margin-top: 4px;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.btn-primary, .btn-secondary {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-primary {
+  background: #607d8b;
+  color: #fff;
+}
+.btn-primary:hover {
+  background: #546e7a;
+}
+
+.btn-secondary {
+  background: #eceff1;
+  color: #162931;
+}
+.btn-secondary:hover {
+  background: #cfd8dc;
+}
+
+.todos-page {
+  background: #f4f4f4;
+  min-height: 100vh;
+  padding-top: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: start;
+}
+
+.carousel-wrapper {
+  position: relative;
+  margin: 100px auto 24px; 
+  width: 100%;
+  max-width: 848px;         
+  overflow: hidden;
+}
+
+.carousel-track {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 8px 0;
+}
+
+.carousel-track::-webkit-scrollbar { display: none; }
+.carousel-track { -ms-overflow-style: none; scrollbar-width: none; }
+
+.carousel-track .todo-card {
+  flex: 0 0 200px;
+  min-height: 260px;
+  box-sizing: border-box;
+}
+
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(96,125,139,0.8);
+  border: none;
+  color: #fff;
+  font-size: 2rem;
+  width: 32px;
+  height: 48px;
+  cursor: pointer;
+  border-radius: 4px;
+  z-index: 10;
+}
+.carousel-arrow.left { left: 0; }
+.carousel-arrow.right { right: 0; }
+.carousel-arrow:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.todo-card.add-card {
+  background: #66bb6a !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.todo-card.add-card .add-icon {
+  font-size: 2.5rem;
+  color: #fff;
 }
