@@ -54,16 +54,14 @@ export default function HomePage() {
           </div>
 
           {listas.map(list => (
-            <div
-              key={list.idLista}
-              className="todo-card"
-              onClick={() =>
-                navigate(`/todos?listId=${encodeURIComponent(list.idLista)}`)
-              }
-            >
-              <h3>{list.nome}</h3>
-            </div>
-          ))}
+  <div
+    key={list.id}
+    className="todo-card"
+    onClick={() => navigate(`/todos?listId=${list.id}`)}
+  >
+    <h3>{list.nome}</h3>
+  </div>
+))}
         </div>
 
         <button className="carousel-arrow right" onClick={scrollRight}>

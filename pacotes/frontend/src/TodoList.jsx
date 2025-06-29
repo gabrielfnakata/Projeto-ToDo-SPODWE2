@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import NavBar from "./NavBar";
-import { data } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 const useAuth = () => {
   const [token, setToken] = useState(() => {
@@ -18,7 +18,6 @@ const useAuth = () => {
         body: JSON.stringify({ email, senha }),
       });
       if (!response.ok) throw new Error('Login falhou');
-  
       const data = await response.json();
       setToken(data.token);
       localStorage.setItem("token", data.token); 
@@ -31,18 +30,19 @@ const useAuth = () => {
   return { token, login };
 };
 
-const AddTodo = ({ addTodo, token }) => {
+const AddTodo = ({ token, fetchTodos, listId }) => {
   const [texto, setTexto] = useState("");
   const [tags, setTags] = useState("");
   const [dataVencimento, setDataVencimento] = useState("");
 
   const handleAdd = async (event) => {
     event.preventDefault();
+    if (!listId) return;
     const textoTrim = texto.trim();
     const tagsArray = tags.split(",").map(t => t.trim()).filter(t => t.length > 0);
 
-    if (textoTrim) {
-      const newTodo = await fetch("http://localhost:3000/todos", {
+    if (textoTrim && listId) {
+      await fetch("http://localhost:3000/todos", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -51,22 +51,19 @@ const AddTodo = ({ addTodo, token }) => {
         body: JSON.stringify({
           texto: textoTrim,
           data_criacao: new Date().toISOString(),
-          data_vencimento: new Date(dataVencimento).toISOString(),
+          data_vencimento: dataVencimento ? new Date(dataVencimento).toISOString() : null,
           tags: tagsArray,
-          id_lista: "228d2299-9ec0-40eb-895b-a2a06af84605", // MUDAR PARA O ID DA LISTA ATUAL DO USUARIO
+          id_lista: listId,
         }),
-      }).then((res) => {
-        if (!res.ok) throw new Error("Erro ao adicionar a tarefa");
-        return res.json();
       });
-
-      addTodo(newTodo); 
       setTexto("");
       setTags("");
+      setDataVencimento("");
+      if (fetchTodos) fetchTodos();
     }
   };
 
- return (
+  return (
     <form className="add-todo-form" onSubmit={handleAdd}>
       <input
         className="add-todo-input"
@@ -74,6 +71,7 @@ const AddTodo = ({ addTodo, token }) => {
         placeholder="Adicione uma tarefa"
         value={texto}
         onChange={(e) => setTexto(e.target.value)}
+        disabled={!listId}
       />
       <input
         className="add-todo-input"
@@ -81,6 +79,7 @@ const AddTodo = ({ addTodo, token }) => {
         placeholder="Adicione uma tag"
         value={tags}
         onChange={(e) => setTags(e.target.value)}
+        disabled={!listId}
       />
       <input
         className="add-todo-input"
@@ -88,8 +87,9 @@ const AddTodo = ({ addTodo, token }) => {
         value={dataVencimento}
         onChange={(e) => setDataVencimento(e.target.value)}
         min={new Date().toISOString().split('T')[0]}
+        disabled={!listId}
       />
-      <button className="add-todo-button" type="submit">
+      <button className="add-todo-button" type="submit" disabled={!listId}>
         Confirmar
       </button>
     </form>
@@ -141,25 +141,28 @@ const TodoItem = ({ todo, markTodoAsDone, updateTodoStatus }) => {
         <span className="todo-tags">[{todo.tags.join(", ")}]</span>
       )}
       {todo.data_vencimento && (
-          <div className="todo-date">
-            📅 Vence em: {formataData(todo.data_vencimento)}
-          </div>
+        <div className="todo-date">
+          📅 Vence em: {formataData(todo.data_vencimento)}
+        </div>
       )}
       {todo.status === "pendente" && (
-    <>
-      <button className="todo-start-button" onClick={() => updateTodoStatus(todo.id, "em andamento")}>Iniciar tarefa</button>
-      <button className="todo-done-button" onClick={() => updateTodoStatus(todo.id, "concluido")}> ✓</button>
-    </>
-    )}
-    {todo.status === "em andamento" && (
-      <button className="todo-done-button" onClick={() => updateTodoStatus(todo.id, "concluido")}>✓</button>
-    )}
+        <>
+          <button className="todo-start-button" onClick={() => updateTodoStatus(todo.id, "em andamento")}>Iniciar tarefa</button>
+          <button className="todo-done-button" onClick={() => updateTodoStatus(todo.id, "concluido")}> ✓</button>
+        </>
+      )}
+      {todo.status === "em andamento" && (
+        <button className="todo-done-button" onClick={() => updateTodoStatus(todo.id, "concluido")}>✓</button>
+      )}
     </li>
   );
 };
 
 export function TodoList() {
   const { token } = useAuth();
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const listId = params.get("listId");
   const [todos, setTodos] = useState([]);
   const [filter, setFilter] = useState("all");
   const [tagFilter, setTagFilter] = useState("");
@@ -170,6 +173,17 @@ export function TodoList() {
     if (filter === "pending") return t.status === "pendente";
     if (filter === "em andamento") return t.status === "em andamento";
     return true;
+  };
+
+  const fetchTodos = async () => {
+    if (!token) return;
+    let url = "http://localhost:3000/todos";
+    if (filter === "tag" && tagFilter) {
+      url = `http://localhost:3000/todos/por-tag?tag=${encodeURIComponent(tagFilter)}`;
+    }
+    const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+    const data = await res.json();
+    setTodos(data);
   };
 
   const updateTodoStatus = async (id, novoStatus) => {
@@ -219,7 +233,6 @@ export function TodoList() {
     setTodos((prev) => prev.map(t => t.id === updated.id ? updated : t));
   };
 
-
   return (
     <>
       <NavBar />
@@ -233,17 +246,22 @@ export function TodoList() {
           />
           <AddTodo 
             addTodo={addTodo} 
-            token={token} 
+            token={token}
+            fetchTodos={fetchTodos}
+            listId={listId}
           />
           <ul className="todos-list">
-            {todos.filter(filterBy).map((t,i) => (
-              <TodoItem 
-                key={i} 
-                todo={t} 
-                markTodoAsDone={markTodoAsDone} 
-                updateTodoStatus={updateTodoStatus} 
-              />
-            ))}
+            {todos
+              .filter(filterBy)
+              .filter(t => String(t.id_lista) === String(listId))
+              .map((t,i) => (
+                <TodoItem 
+                  key={i} 
+                  todo={t} 
+                  markTodoAsDone={markTodoAsDone} 
+                  updateTodoStatus={updateTodoStatus} 
+                />
+              ))}
           </ul>
         </div>
       </div>
