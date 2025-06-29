@@ -160,13 +160,14 @@ const TodoItem = ({ todo, markTodoAsDone, updateTodoStatus }) => {
 
 export function TodoList() {
   const { token } = useAuth();
-  const location = useLocation();
-  const params = new URLSearchParams(location.search);
-  const listId = params.get("listId");
   const [todos, setTodos] = useState([]);
   const [filter, setFilter] = useState("all");
   const [tagFilter, setTagFilter] = useState("");
   const [tagsDisponiveis, setTagsDisponiveis] = useState([]);
+  const [nome, setNome] = useState("Minha Lista");
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const listId = params.get("listId");
 
   const filterBy = (t) => {
     if (filter === "done") return t.status === "concluido";
@@ -195,6 +196,23 @@ export function TodoList() {
     const updated = await res.json();
     setTodos((prev) => prev.map(t => t.id === updated.id ? updated : t));
   };
+
+  useEffect(() => {
+    if (!token || !listId) return;
+    (async () => {
+      const res = await fetch(`http://localhost:3000/listas/${listId}`, { 
+        headers: { 
+          Authorization: `Bearer ${token}` 
+        } 
+      });
+      if (res.ok) {
+        const lista = await res.json();
+        setNome(lista.nome);
+      } else {
+        console.error("Erro ao buscar nome da lista");
+      }
+    })();
+  }, [listId, token]);
 
   useEffect(() => {
     if (!token) return;
@@ -238,7 +256,7 @@ export function TodoList() {
       <NavBar />
       <div className="todos-page">
         <div className="todos-card">
-          <h1 className="todos-header">Nome Todo</h1>
+          <h1 className="todos-header">{nome}</h1>
           <TodoFilter
             setFilter={setFilter}
             setTagFilter={setTagFilter}

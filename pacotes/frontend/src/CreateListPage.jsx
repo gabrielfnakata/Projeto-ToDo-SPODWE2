@@ -32,15 +32,15 @@ export default function CreateListPage() {
         },
         body: JSON.stringify({
           nome: listName.trim(),
-          podeEditar: emails,
         }),
       });
       if (!res.ok) {
         const err = await res.json().catch(() => null);
         throw new Error(err?.error || "Falha ao criar lista");
       }
-      // tudo certo, volta para as suas listas
-      navigate("/home");
+      
+      const list = await res.json();
+      navigate(`/todos?listId=${list.id}`);
     } catch (err) {
       console.error(err);
       setError(err.message);
@@ -74,7 +74,7 @@ export default function CreateListPage() {
                 type="text"
                 value={editorEmails}
                 onChange={e => setEditorEmails(e.target.value)}
-                placeholder="separe por vírgula"
+                placeholder="Ex: Ciclano@gmail.com"
               />
               <small className="form-help">
                 Insira e-mails separados por vírgula
@@ -89,6 +89,7 @@ export default function CreateListPage() {
               >
                 Cancelar
               </button>
+
               <button type="submit" className="btn-primary">
                 Criar Lista
               </button>
