@@ -2,8 +2,6 @@ import { JWT_SECRET_KEY } from "../configDB.js";
 import jwt from "jsonwebtoken";
 
 export const auth = (req, res, next) => {
-  console.log(req.header("Authorization"));
-
   //O Token deve vir no formato "Bearer <token>". Por isso, usamos o split(" ")[1] para pegar apenas o token.
   //Ver: https://developer.mozilla.org/pt-BR/docs/Web/HTTP/Guides/Authentication#authentication_schemes
   //Ver: https://jwt.io/introduction

@@ -1,4 +1,4 @@
-import { criaNovaLista, retornaTodasAsListasDoUsuarioAtual } from "./Controllers/ListaTodos.js";
+import { criaNovaLista, retornaTodasAsListasDoUsuarioAtual, retornaListaPeloId } from "./Controllers/ListaTodos.js";
 import { allTodos, criaTodo, atualizaTodo, getTodosVencendo } from "./Controllers/Todos.js";
 import { registraUsuario, loginUsuario, getUsuarioAtual } from "./Controllers/Usuarios.js";
 import { filtrarPorTag, listarTags  } from "./Controllers/Tags.js";
@@ -32,6 +32,7 @@ rotas.post("/listas", auth, criaNovaLista); /* Cria uma nova lista de todos. O c
 }
 */
 rotas.get("/listas", auth, retornaTodasAsListasDoUsuarioAtual); // Retorna todas as listas do usuario autenticado.
+rotas.get("/listas/:id", auth, retornaListaPeloId);
 
 // Rotas de Tags
 rotas.get("/todos/por-tag", auth, filtrarPorTag);

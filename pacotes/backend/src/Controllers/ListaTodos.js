@@ -24,6 +24,12 @@ export function criaNovaLista(req, res) {
 
         const id = crypto.randomUUID();
         insertListaTodos(id, nome.trim(), userId);
+        return res.status(201).json({ 
+            message: "Lista criada com sucesso", 
+            id, 
+            nome: nome.trim(), 
+            criador: userId 
+        });
     }
     catch (err) {
         console.error('Erro ao criar nova lista:', err);
@@ -60,6 +66,30 @@ export function getListasPorUsuario(userId) {
             resolve(rows || []);
         });
     });
+}
+
+export async function retornaListaPeloId(req, res) {
+    try {
+        const idLista = req.params.id;
+        if (!idLista) {
+            return res.status(400).json({ error: "ID da lista é obrigatório" });
+        }
+    
+        const lista = await getListaTodosPorId(idLista);
+        if (!lista) {
+            return res.status(404).json({ error: "Lista não encontrada" });
+        }
+
+        res.json({
+            id: lista.id,
+            nome: lista.nome,
+            criador: lista.criador
+        });
+    }
+    catch (err) {
+        console.error('Erro ao buscar lista pelo ID:', err);
+        return res.status(500).json({ error: "Erro interno do servidor" });
+    }
 }
 
 export function getListaTodosPorId(id) {
