@@ -271,3 +271,20 @@ function retornaDataComDiasSomados(numeroDias, dataInicio = new Date()) {
 
     return dataSomada;
 }
+
+export function getTodosPorLista(idLista, limit = 7) {
+  return new Promise((resolve, reject) => {
+    db.all(
+      `SELECT id, texto, status
+       FROM todos
+       WHERE id_lista = ?
+       ORDER BY data_criacao DESC
+       LIMIT ?`,
+      [idLista, limit],
+      (err, rows) => {
+        if (err) return reject(err);
+        resolve(rows || []);
+      }
+    );
+  });
+}

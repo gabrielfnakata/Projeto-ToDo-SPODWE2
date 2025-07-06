@@ -1,4 +1,5 @@
 import { db } from '../configDB.js';
+import { getTodosPorLista } from './Todos.js';
 
 export function criarTabelaListaTodos() {
     db.run(`
@@ -38,23 +39,35 @@ export function criaNovaLista(req, res) {
 }
 
 export async function retornaTodasAsListasDoUsuarioAtual(req, res) {
-    try {
-        const userId = req.user.id;
-        if (!userId) {
-            return res.status(400).json({ error: "Usuário não autenticado" });
-        }
-
-        const listas = await getListasPorUsuario(userId);
-        if (listas.length === 0) {
-            return res.status(404).json({ message: "Nenhuma lista encontrada para o usuário" });
-        }
-
-        return res.status(200).json(listas);
-    } 
-    catch (err) {
-        console.error('Erro ao buscar listas do usuário:', err);
-        return res.status(500).json({ error: "Erro interno do servidor" });
+  try {
+    const userId = req.user.id;
+    if (!userId) {
+      return res.status(400).json({ error: "Usuário não autenticado" });
     }
+
+    const listas = await getListasPorUsuario(userId);
+    if (listas.length === 0) {
+      return res.status(404).json({ message: "Nenhuma lista encontrada para o usuário" });
+    }
+
+    const listasComPreview = await Promise.all(
+      listas.map(async lista => {
+        const preview = await getTodosPorLista(lista.id, 7);
+        return {
+          id: lista.id,
+          nome: lista.nome,
+          criador: lista.criador,
+          todosPreview: preview
+        };
+      })
+    );
+
+    return res.status(200).json(listasComPreview);
+  } 
+  catch (err) {
+    console.error('Erro ao buscar listas do usuário:', err);
+    return res.status(500).json({ error: "Erro interno do servidor" });
+  }
 }
 
 export function getListasPorUsuario(userId) {

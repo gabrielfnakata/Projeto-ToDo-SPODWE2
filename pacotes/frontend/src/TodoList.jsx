@@ -124,6 +124,16 @@ const TodoFilter = ({ setFilter, setTagFilter, tagsDisponiveis }) => {
           <option key={i} value={t}>{t}</option>
         ))}
       </select>
+      <button
+        onClick={() => {
+          if (window.confirm("Tem certeza que deseja excluir esta lista?")) {
+            onDeleteList();
+          }
+        }}
+        style={{ marginLeft: 8, background: "#e53935" }}
+      >
+        Excluir Lista
+      </button>
     </div>
   );
 };

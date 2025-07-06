@@ -38,4 +38,5 @@ rotas.get("/listas/:id", auth, retornaListaPeloId);
 rotas.get("/todos/por-tag", auth, filtrarPorTag);
 rotas.get("/tags", auth, listarTags);
 
+
 export default rotas;
