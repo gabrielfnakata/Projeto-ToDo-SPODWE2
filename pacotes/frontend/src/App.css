@@ -243,8 +243,33 @@ margin-bottom: 10px;
   font-size: 1em;
   font-weight: bold;
   color: #ffffff;
+  flex-wrap: wrap;
 }
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;   /* empilha logo + grupos */
+    align-items: center;      /* centraliza tudo */
+    height: auto;             /* ajusta altura conforme conteúdo */
+    padding: 12px;            /* reduz margens laterais */
+  }
 
+  .navbar-left,
+  .navbar-right {
+    width: 100%;              /* ocupam linha inteira */
+    justify-content: center;  /* centralizam botões */
+    margin: 8px 0;            /* espaçamento vertical */
+  }
+
+  .logo {
+    margin: 0 0 8px 0;        /* separa do grupo de botões */
+  }
+
+  .nav-button {
+    padding: 8px 16px;        /* botões menores */
+    font-size: 1rem;          /* fonte ajustada */
+    margin-right: 0;          /* remove margem extra */
+  }
+}
 .logo {
   height: 40px;
   width: auto;
@@ -348,6 +373,7 @@ margin-bottom: 10px;
   box-shadow: 0 8px 12px rgba(0,0,0,0.1);
   padding: 24px;
   margin-bottom: 20px;
+  margin-top: 100px;
 }
 
 .todos-header {
@@ -545,11 +571,10 @@ margin-bottom: 10px;
   background: #cfd8dc;
 }
 
-/* ensure the form is centered below navbar */
 .todos-page {
   background: #f4f4f4;
   min-height: 100vh;
-  padding-top: 100px; /* adjust to navbar height */
+  padding-top: 100px;
   display: flex;
   justify-content: center;
   align-items: start;
@@ -632,9 +657,10 @@ margin-bottom: 10px;
 .carousel-wrapper {
   position: relative;
   margin: 100px auto 24px; 
-  width: 100%;
-  max-width: 848px;         
-  overflow: hidden;
+  width: 90%;           /* antes: 100% (com max-width) – agora limita a 90% da viewport */
+  max-width: none;      /* remove o limite de 848px */
+  overflow: visible;
+  padding: 0 60px;      /* espaço maior para as setas */
 }
 
 .carousel-track {
@@ -649,27 +675,53 @@ margin-bottom: 10px;
 .carousel-track { -ms-overflow-style: none; scrollbar-width: none; }
 
 .carousel-track .todo-card {
-  flex: 0 0 200px;
-  min-height: 260px;
+  flex: 0 0 350px;      /* base mais larga para mostrar menos cards por vez */
+  min-height: 500px;    /* altura bem maior */
+  margin: 0 12px;       /* espaçamento lateral interno */
   box-sizing: border-box;
 }
+@media (max-width: 1200px) {
+  .carousel-wrapper {
+    width: 95%;
+    padding: 0 40px;
+  }
+  .carousel-track .todo-card {
+    flex: 0 0 300px;
+    min-height: 450px;
+  }
+}
 
+@media (max-width: 768px) {
+  .carousel-wrapper {
+    width: 100%;
+    padding: 0 20px;
+  }
+  .carousel-track .todo-card {
+    flex: 0 0 250px;
+    min-height: 350px;
+  }
+}
 .carousel-arrow {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
   background: rgba(96,125,139,0.8);
-  border: none;
-  color: #fff;
-  font-size: 2rem;
-  width: 32px;
-  height: 48px;
-  cursor: pointer;
+  /* você pode aumentar um pouco o tamanho se quiser: */
+  width: 40px;
+  height: 60px;
+  font-size: 2.5rem;
   border-radius: 4px;
   z-index: 10;
 }
-.carousel-arrow.left { left: 0; }
-.carousel-arrow.right { right: 0; }
+
+.carousel-arrow.left {
+  left: 0;                 /* “gruda” na margem interna do padding */
+  transform: translate(-100%, -50%);
+}
+.carousel-arrow.right {
+  right: 0;
+  transform: translate(100%, -50%);
+}
 .carousel-arrow:disabled {
   opacity: 0.3;
   cursor: default;
