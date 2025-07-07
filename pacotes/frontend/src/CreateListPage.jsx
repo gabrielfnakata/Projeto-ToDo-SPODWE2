@@ -11,34 +11,55 @@ export default function CreateListPage() {
   const [editorEmails, setEditorEmails] = useState("");
   const [emailList, setEmailList] = useState([]);
   const [error, setError] = useState("");
+  const [emailError, setEmailError] = useState("");
 
-  const addEmail = () => {
+ const checkEmailExists = async (email) => {
+  try {
+    const res = await fetch("http://localhost:3000/usuarios/emails", {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (!res.ok) return false;
+    const emails = await res.json();
+    return emails.some(e => e.email === email);
+  } catch {
+    return false;
+  }
+};
+
+  const addEmail = async () => {
     const email = editorEmails.trim();
-    if (email && !emailList.includes(email)) {
-      setEmailList([...emailList, email]);
-      setEditorEmails("");
+    setEmailError("");
+
+    if (!email) return;
+    if (emailList.includes(email)) return;
+
+    const exists = await checkEmailExists(email);
+    if (!exists) {
+      setEmailError("Este e-mail não está cadastrado.");
+      return;
     }
+
+    setEmailList([...emailList, email]);
+    setEditorEmails("");
   };
 
   const removeEmail = (emailToRemove) => {
     setEmailList(emailList.filter(email => email !== emailToRemove));
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyPress = async (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      addEmail();
+      await addEmail();
     }
   };
 
   const handleSubmit = async e => {
     e.preventDefault();
-
     if (!listName.trim()) {
       setError("O nome da lista é obrigatório.");
       return;
     }
-
     try {
       const res = await fetch("http://localhost:3000/listas", {
         method: "POST",
@@ -104,7 +125,7 @@ export default function CreateListPage() {
                   Adicionar
                 </button>
               </div>
-              
+              {emailError && <span className="form-error">{emailError}</span>}
               {emailList.length > 0 && (
                 <div className="email-list">
                   {emailList.map((email, index) => (
@@ -121,7 +142,6 @@ export default function CreateListPage() {
                   ))}
                 </div>
               )}
-              
               <small className="form-help">
                 Digite um e-mail e pressione Enter ou clique em Adicionar
               </small>

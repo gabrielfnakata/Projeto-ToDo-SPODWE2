@@ -1,19 +1,28 @@
-// HomePage.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import NavBar from "./NavBar";
 import "./App.css";
 
-export default function HomePage({ shared = false }) {
+export default function HomePage() {
   const location = useLocation();
   const [usuario, setUsuario] = useState(null);
   const [listas, setListas] = useState([]);
+  const [filtro, setFiltro] = useState("todas");
   const navigate = useNavigate();
   const trackRef = useRef(null);
 
   const token = localStorage.getItem("token");
 
-  // 1) Buscar dados do usuário (verifica se está logado)
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const filtroURL = params.get("filtro");
+    if (filtroURL === "propria" || filtroURL === "compartilhada") {
+      setFiltro(filtroURL);
+    } else {
+      setFiltro("todas");
+    }
+  }, [location.search]);
+
   const buscarUsuario = async () => {
     if (!token) {
       setUsuario(null);
@@ -34,18 +43,25 @@ export default function HomePage({ shared = false }) {
     }
   };
 
-  // 2) Buscar listas somente quando o usuário estiver logado
   const buscarListas = async () => {
     if (!token) return;
     try {
-      const endpoint = shared ? "http://localhost:3000/listas/compartilhadas" : "http://localhost:3000/listas";
-      const res = await fetch(endpoint, {
+      const resProprias = await fetch("http://localhost:3000/listas", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (res.ok) {
-        const data = await res.json();
-        setListas(data);
-      }
+      const listasProprias = resProprias.ok ? await resProprias.json() : [];
+
+      const resCompartilhadas = await fetch("http://localhost:3000/listas/compartilhadas", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const listasCompartilhadas = resCompartilhadas.ok ? await resCompartilhadas.json() : [];
+
+      const todasListas = [
+        ...(Array.isArray(listasProprias) ? listasProprias.map(l => ({ ...l, tipo: "propria" })) : []),
+        ...(Array.isArray(listasCompartilhadas) ? listasCompartilhadas.map(l => ({ ...l, tipo: "compartilhada" })) : []),
+      ];
+
+      setListas(todasListas);
     } catch (err) {
       console.error(err);
     }
@@ -59,9 +75,9 @@ export default function HomePage({ shared = false }) {
     if (usuario) {
       buscarListas();
     }
-  }, [usuario, shared, location.pathname]);
+    // eslint-disable-next-line
+  }, [usuario, location.pathname]);
 
-  // Scroll do carrossel
   const scrollLeft = () => {
     trackRef.current?.scrollBy({ left: -trackRef.current.clientWidth, behavior: "smooth" });
   };
@@ -69,7 +85,6 @@ export default function HomePage({ shared = false }) {
     trackRef.current?.scrollBy({ left: trackRef.current.clientWidth, behavior: "smooth" });
   };
 
-  // Se não estiver logado, mostra prompt de login
   if (!usuario) {
     return (
       <>
@@ -84,7 +99,11 @@ export default function HomePage({ shared = false }) {
     );
   }
 
-  // Usuário logado: exibe o carrossel
+  const listasFiltradas =
+    filtro === "todas"
+      ? listas
+      : listas.filter((l) => l.tipo === filtro);
+
   return (
     <div className="homepage">
       <NavBar />
@@ -93,7 +112,6 @@ export default function HomePage({ shared = false }) {
         <button className="carousel-arrow left" onClick={scrollLeft}>‹</button>
 
         <div className="carousel-track" ref={trackRef}>
-          {/* Card de adicionar nova lista */}
           <div
             className="todo-card add-card"
             onClick={() => navigate("/listas/create")}
@@ -101,36 +119,40 @@ export default function HomePage({ shared = false }) {
             <span className="add-icon">+</span>
           </div>
 
-         {listas.map((list) => (
-          <div
-            key={list.id}
-            className="todo-card"
-            onClick={() => navigate(`/todos?listId=${list.id}`)}
-          >
-            <h3>{list.nome}</h3>
-            <ul className="card-todos-preview">
-              {list.todosPreview?.length > 0 ? (
-                list.todosPreview.map((todo) => (
-                  <li
-                    key={todo.id}
-                    className={
-                      String(todo.status || "")
-                        .toLowerCase()
-                        .includes("conclu")
-                        ? "completed"
-                        : ""
-                    }
-                  >
-                    {todo.texto}
-                  </li>
-                ))
-              ) : (
-                <li className="empty">Nenhum item ainda</li>
+          {listasFiltradas.map((list) => (
+            <div
+              key={list.id}
+              className="todo-card"
+              onClick={() => navigate(`/todos?listId=${list.id}`)}
+            >
+              <h3>
+                {list.nome}
+              </h3>
+              {list.tipo === "compartilhada" && (
+                <div style={{ fontSize: 12, color: "#888", marginTop: 2 }}>(compartilhada)</div>
               )}
-            </ul>
-          </div>
-        ))}
-
+              <ul className="card-todos-preview">
+                {list.todosPreview?.length > 0 ? (
+                  list.todosPreview.map((todo) => (
+                    <li
+                      key={todo.id}
+                      className={
+                        String(todo.status || "")
+                          .toLowerCase()
+                          .includes("conclu")
+                          ? "completed"
+                          : ""
+                      }
+                    >
+                      {todo.texto}
+                    </li>
+                  ))
+                ) : (
+                  <li className="empty">Nenhum item ainda</li>
+                )}
+              </ul>
+            </div>
+          ))}
         </div>
 
         <button className="carousel-arrow right" onClick={scrollRight}>›</button>

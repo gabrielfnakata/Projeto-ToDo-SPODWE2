@@ -149,7 +149,9 @@ export async function atualizaTodo(req, res) {
         }
 
         const lista = await getListaTodosPorId(todo.id_lista);
-        if (!lista || lista.criador !== userId) {
+        const usuariosConvidados = await getUsuariosComAcessoALista(todo.id_lista);
+        const idsComAcesso = usuariosConvidados.map(u => u.id_usuario);
+        if (!lista || (lista.criador !== userId && !idsComAcesso.includes(userId))) {
             return res.status(403).json({ error: "Acesso negado ao todo" });
         }
 
@@ -271,8 +273,10 @@ function getTodosPorUsuario(userId) {
         db.all(`
             SELECT t.* FROM todos t 
             INNER JOIN lista_todos l ON t.id_lista = l.id 
-            WHERE l.criador = ?
-        `, [userId], (err, rows) => {
+            WHERE l.criador = ? OR l.id IN (
+                SELECT id_lista FROM acesso_lista WHERE id_usuario = ?
+            )
+        `, [userId, userId], (err, rows) => {
             if (err) {
                 reject(err);
             }
@@ -286,8 +290,10 @@ function getTodosNaoConcluidosPorUsuario(userId) {
         db.all(`
             SELECT t.* FROM todos t 
             INNER JOIN lista_todos l ON t.id_lista = l.id 
-            WHERE l.criador = ? AND t.status != 'concluido'
-        `, [userId], (err, rows) => {
+            WHERE (l.criador = ? OR l.id IN (
+                SELECT id_lista FROM acesso_lista WHERE id_usuario = ?
+            )) AND t.status != 'concluido'
+        `, [userId, userId], (err, rows) => {
             if (err) {
                 reject(err);
             }
