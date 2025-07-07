@@ -1,7 +1,6 @@
-// TodoList.jsx
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import NavBar from "./NavBar";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const useAuth = () => {
   const [token, setToken] = useState(() => localStorage.getItem("token"));
@@ -106,6 +105,34 @@ const AddTodo = ({ token, fetchTodos, listId }) => {
 
 const TodoFilter = ({ setFilter, setTagFilter, tagsDisponiveis, dateFilter, setDateFilter }) => {
   const [tag, setTag] = useState("");
+  const navigate = useNavigate();
+
+  const onDeleteList = async () => {
+    const listId = new URLSearchParams(window.location.search).get("listId");
+    if (!listId) return;
+
+    try {
+      const response = await fetch(`http://localhost:3000/listas/${listId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      if (response.ok) {
+        alert("Lista excluída com sucesso!");
+        navigate("/home");
+      }
+      else {
+        const error = await response.json();
+        alert(`Erro ao excluir lista: ${error.message}`);
+      }
+    }
+    catch (error) {
+      console.error("Erro ao excluir lista:", error);
+      alert("Erro ao excluir lista. Tente novamente mais tarde.");
+    }
+  };
 
   const handleFilterClick = (e) => {
     e.preventDefault();
@@ -307,18 +334,31 @@ const filterByDate = (t) => {
 
 
   const fetchTodos = async () => {
-    if (!token) return;
-    let url = "http://localhost:3000/todos";
+    if (!token || !listId) return;
+  
+    let url = `http://localhost:3000/todos/por-lista/${listId}`;
     if (filter === "tag" && tagFilter) {
       url = `http://localhost:3000/todos/por-tag?tag=${encodeURIComponent(
         tagFilter
       )}`;
     }
-    const res = await fetch(url, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const data = await res.json();
-    setTodos(data);
+    
+    try {
+      const res = await fetch(url, { 
+        headers: { Authorization: `Bearer ${token}` } 
+      });
+      
+      if (!res.ok) {
+        console.error('Erro na resposta:', res.status);
+        return;
+      }
+      
+      const data = await res.json();
+      const todosArray = Array.isArray(data) ? data : (data.todos || []);
+      setTodos(todosArray);
+    } catch (error) {
+      console.error('Erro ao buscar todos:', error);
+    }
   };
 
   const updateTodoStatus = async (id, novoStatus) => {
@@ -351,7 +391,7 @@ const filterByDate = (t) => {
 
   useEffect(() => {
     fetchTodos();
-  }, [token, filter, tagFilter]);
+  }, [token, filter, tagFilter, listId]);
 
   useEffect(() => {
     if (!token) return;
@@ -384,14 +424,13 @@ const filterByDate = (t) => {
           />
           <ul className="todos-list">
             {todos
-              .filter(filterBy)                   // status
-              .filter(filterByDate)               // data de vencimento
-              .filter((t) => String(t.id_lista) === String(listId))
-              .map((t, i) => (
-                <TodoItem
-                  key={i}
-                  todo={t}
-                  updateTodoStatus={updateTodoStatus}
+              .filter(filterBy)
+              .map((t,i) => (
+                <TodoItem 
+                  key={i} 
+                  todo={t} 
+                  markTodoAsDone={markTodoAsDone} 
+                  updateTodoStatus={updateTodoStatus} 
                 />
               ))}
           </ul>

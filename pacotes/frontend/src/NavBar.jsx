@@ -48,7 +48,9 @@ export default function NavBar() {
         <Link to="/home">
           <button className="nav-button">Minhas To-Dos</button>
         </Link>
-        <button className="nav-button">To-Dos Compartilhadas</button>
+        <Link to="/homecompartilhadas">
+          <button className="nav-button">To-Dos Compartilhadas</button>
+        </Link>
       </div>
 
       <div className="navbar-right">

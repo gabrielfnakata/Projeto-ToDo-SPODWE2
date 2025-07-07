@@ -17,6 +17,22 @@ export function criarTabelaUsuarios() {
     );
 }
 
+export async function retornaTodosOsEmails(req, res) {
+    try {
+        const idUsuario = req.user.id;
+        if (!idUsuario) {
+            return res.status(401).json({ error: "Usuário não autenticado" });
+        }
+
+        const emails = await getAllEmailsExceptUser(idUsuario);
+        return res.status(200).json(emails);
+    }
+    catch (err) {
+        console.error('Erro ao retornar todos os emails:', err);
+        return res.status(500).json({ error: "Erro interno do servidor" });
+    }
+}
+
 export async function registraUsuario(req, res) {
     try {
         const { nome, email, senha } = req.body;
@@ -128,7 +144,7 @@ function getUsuarioPorId(id) {
     });
 }
 
-function getUsuarioPorEmail(email) {
+export function getUsuarioPorEmail(email) {
     return new Promise((resolve, reject) => {
         db.get(`SELECT * FROM usuarios WHERE email = ?`, [email], (err, row) => {
             if (err) {
@@ -149,6 +165,17 @@ function insertUsuario(id, nome, email, senha) {
 export function getAllUsuarios() {
     return new Promise((resolve, reject) => {
         db.all(`SELECT * FROM usuarios`, (err, rows) => {
+            if (err) {
+                reject(err);
+            }
+            resolve(rows || null);
+        });
+    });
+}
+
+function getAllEmailsExceptUser(idUsuario) {
+    return new Promise((resolve, reject) => {
+        db.all(`SELECT email FROM usuarios WHERE id != ?`, [idUsuario], (err, rows) => {
             if (err) {
                 reject(err);
             }

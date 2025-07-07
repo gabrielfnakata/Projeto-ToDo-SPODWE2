@@ -1,5 +1,6 @@
 import { getListaTodosPorId, insertListaTodos, getListasPorUsuario } from './ListaTodos.js';
 import { associarTagsAoTodo, buscarTagsDoTodo } from './Tags.js';
+import { getUsuariosComAcessoALista } from './AcessoLista.js';
 import { db } from '../configDB.js';
 import crypto from "crypto";
 
@@ -12,7 +13,7 @@ export function criarTabelaTodos() {
             data_criacao DATETIME DEFAULT CURRENT_TIMESTAMP,
             data_vencimento DATETIME NOT NULL,
             id_lista TEXT NOT NULL,
-            FOREIGN KEY (id_lista) REFERENCES lista_todos(id)
+            FOREIGN KEY (id_lista) REFERENCES lista_todos(id) ON DELETE CASCADE
         )`
     );
 }
@@ -67,7 +68,8 @@ export async function criaTodo(req, res) {
         } 
         else {
             const lista = await getListaTodosPorId(listaId);
-            if (!lista || lista.criador !== userId) {
+            const usuariosConvidados = await getUsuariosComAcessoALista(listaId);
+            if (!lista || (lista.criador !== userId && !usuariosConvidados.map(u => u.id_usuario).includes(userId))) {
                 return res.status(403).json({ error: "Acesso negado à lista" });
             }
         }
@@ -195,6 +197,40 @@ export async function atualizaTodo(req, res) {
     }
 }
 
+export async function retornaTodosPorLista(req, res) {
+    try {
+        const idLista = req.params.id;
+        if (!idLista) {
+            return res.status(400).json({ error: "ID da lista é obrigatório" });
+        }
+        const lista = await getListaTodosPorId(idLista);
+        if (!lista) {
+            return res.status(404).json({ error: "Lista não encontrada" });
+        }
+        const todos = await getTodosPorLista(idLista);
+
+        return res.status(200).json({
+            id: lista.id,
+            nome: lista.nome,
+            criador: lista.criador,
+            todos: todos.map(todo => {
+                return {
+                    id: todo.id,
+                    texto: todo.texto,
+                    status: todo.status,
+                    data_criacao: todo.data_criacao,
+                    data_vencimento: todo.data_vencimento,
+                    tags: buscarTagsDoTodo(todo.id)
+                };
+            })
+        });
+    }
+    catch(err) {
+        console.error('Erro ao buscar todos por lista:', err);
+        return res.status(500).json({ error: "Erro interno do servidor" });
+    }
+}
+
 async function retornaOuCriaListaPadrao(userId) {
     const listas = await getListasPorUsuario(userId);
     if (listas.length > 0) {
@@ -270,6 +306,21 @@ function retornaDataComDiasSomados(numeroDias, dataInicio = new Date()) {
     dataSomada.setDate(dataInicio.getDate() + numeroDias);
 
     return dataSomada;
+}
+
+function getAllTodosByList(idLista) {
+  return new Promise((resolve, reject) => {
+    db.all(
+      `SELECT *
+       FROM todos
+       WHERE id_lista = ?`,
+      [idLista],
+      (err, rows) => {
+        if (err) return reject(err);
+        resolve(rows || []);
+      }
+    );
+  });
 }
 
 export function getTodosPorLista(idLista, limit = 7) {

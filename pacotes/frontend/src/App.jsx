@@ -13,8 +13,9 @@ export default function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/home" element={<HomePage />} />
+      <Route path="/homecompartilhadas" element={<HomePage shared />} />
       <Route path="/todos" element={<TodoList />} />
-       <Route path="/listas/create" element={<CreateListPage />} />git
+       <Route path="/listas/create" element={<CreateListPage />} />
     </Routes>
   );
 }

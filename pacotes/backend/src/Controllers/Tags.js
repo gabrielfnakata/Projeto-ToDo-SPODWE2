@@ -11,8 +11,8 @@ export function criarTabelaTags() {
         CREATE TABLE IF NOT EXISTS todo_tags (
             todo_id TEXT NOT NULL,
             tag_id INTEGER NOT NULL,
-            FOREIGN KEY (todo_id) REFERENCES todos(id),
-            FOREIGN KEY (tag_id) REFERENCES tags(id),
+            FOREIGN KEY (todo_id) REFERENCES todos(id) ON DELETE CASCADE,
+            FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE,
             PRIMARY KEY (todo_id, tag_id)
         )`
     );

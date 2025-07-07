@@ -1,10 +1,11 @@
 // HomePage.jsx
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import NavBar from "./NavBar";
 import "./App.css";
 
-export default function HomePage() {
+export default function HomePage({ shared = false }) {
+  const location = useLocation();
   const [usuario, setUsuario] = useState(null);
   const [listas, setListas] = useState([]);
   const navigate = useNavigate();
@@ -37,7 +38,8 @@ export default function HomePage() {
   const buscarListas = async () => {
     if (!token) return;
     try {
-      const res = await fetch("http://localhost:3000/listas", {
+      const endpoint = shared ? "http://localhost:3000/listas/compartilhadas" : "http://localhost:3000/listas";
+      const res = await fetch(endpoint, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.ok) {
@@ -57,7 +59,7 @@ export default function HomePage() {
     if (usuario) {
       buscarListas();
     }
-  }, [usuario]);
+  }, [usuario, shared, location.pathname]);
 
   // Scroll do carrossel
   const scrollLeft = () => {
@@ -100,34 +102,34 @@ export default function HomePage() {
           </div>
 
          {listas.map((list) => (
-  <div
-    key={list.id}
-    className="todo-card"
-    onClick={() => navigate(`/todos?listId=${list.id}`)}
-  >
-    <h3>{list.nome}</h3>
-    <ul className="card-todos-preview">
-      {list.todosPreview?.length > 0 ? (
-        list.todosPreview.map((todo) => (
-          <li
-            key={todo.id}
-            className={
-              String(todo.status || "")
-                .toLowerCase()
-                .includes("conclu")
-                ? "completed"
-                : ""
-            }
+          <div
+            key={list.id}
+            className="todo-card"
+            onClick={() => navigate(`/todos?listId=${list.id}`)}
           >
-            {todo.texto}
-          </li>
-        ))
-      ) : (
-        <li className="empty">Nenhum item ainda</li>
-      )}
-    </ul>
-  </div>
-))}
+            <h3>{list.nome}</h3>
+            <ul className="card-todos-preview">
+              {list.todosPreview?.length > 0 ? (
+                list.todosPreview.map((todo) => (
+                  <li
+                    key={todo.id}
+                    className={
+                      String(todo.status || "")
+                        .toLowerCase()
+                        .includes("conclu")
+                        ? "completed"
+                        : ""
+                    }
+                  >
+                    {todo.texto}
+                  </li>
+                ))
+              ) : (
+                <li className="empty">Nenhum item ainda</li>
+              )}
+            </ul>
+          </div>
+        ))}
 
         </div>
 

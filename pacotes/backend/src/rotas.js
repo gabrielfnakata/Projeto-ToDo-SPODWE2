@@ -1,6 +1,6 @@
-import { criaNovaLista, retornaTodasAsListasDoUsuarioAtual, retornaListaPeloId } from "./Controllers/ListaTodos.js";
-import { allTodos, criaTodo, atualizaTodo, getTodosVencendo } from "./Controllers/Todos.js";
-import { registraUsuario, loginUsuario, getUsuarioAtual } from "./Controllers/Usuarios.js";
+import { criaNovaLista, retornaTodasAsListasDoUsuarioAtual, retornaListaPeloId, deletarLista, retornaTodasAsListasCompartilhadas } from "./Controllers/ListaTodos.js";
+import { allTodos, criaTodo, atualizaTodo, getTodosVencendo, retornaTodosPorLista } from "./Controllers/Todos.js";
+import { registraUsuario, loginUsuario, getUsuarioAtual, retornaTodosOsEmails } from "./Controllers/Usuarios.js";
 import { filtrarPorTag, listarTags  } from "./Controllers/Tags.js";
 import { auth } from "./middlewares/auth.mjs";
 import { Router } from "express";
@@ -15,6 +15,7 @@ rotas.get("/", (req, res) => {
 rotas.post("/usuarios", registraUsuario);
 rotas.post("/login", loginUsuario);
 rotas.get("/me", auth, getUsuarioAtual);
+rotas.get("/usuarios/emails", auth, retornaTodosOsEmails);
 
 // Rotas de Todos
 rotas.get("/todos", auth, allTodos); // Retorna todos os todos do usuário autenticado e todos os atributos dos todos.
@@ -23,6 +24,7 @@ rotas.put("/todos/:id", auth, atualizaTodo);
 rotas.get("/todos/vencendo/:dias", auth, getTodosVencendo); /* Retorna todos os todos que vencem nos próximos X dias, onde X é o parâmetro passado na rota.
 pra passar como parâmetro, use no fetch: `.../todos/vencendo/${X}` para ver os todos que tem data de vencimento nos próximos X dias.
 */
+rotas.get("/todos/por-lista/:id", auth, retornaTodosPorLista);
 
 // Rotas de Listas
 rotas.post("/listas", auth, criaNovaLista); /* Cria uma nova lista de todos. O corpo da requisição deve ser:
@@ -32,7 +34,9 @@ rotas.post("/listas", auth, criaNovaLista); /* Cria uma nova lista de todos. O c
 }
 */
 rotas.get("/listas", auth, retornaTodasAsListasDoUsuarioAtual); // Retorna todas as listas do usuario autenticado.
+rotas.get("/listas/compartilhadas", auth, retornaTodasAsListasCompartilhadas);
 rotas.get("/listas/:id", auth, retornaListaPeloId);
+rotas.delete("/listas/:id", auth, deletarLista)
 
 // Rotas de Tags
 rotas.get("/todos/por-tag", auth, filtrarPorTag);

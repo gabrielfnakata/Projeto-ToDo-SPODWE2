@@ -9,14 +9,30 @@ export default function CreateListPage() {
 
   const [listName, setListName] = useState("");
   const [editorEmails, setEditorEmails] = useState("");
+  const [emailList, setEmailList] = useState([]);
   const [error, setError] = useState("");
+
+  const addEmail = () => {
+    const email = editorEmails.trim();
+    if (email && !emailList.includes(email)) {
+      setEmailList([...emailList, email]);
+      setEditorEmails("");
+    }
+  };
+
+  const removeEmail = (emailToRemove) => {
+    setEmailList(emailList.filter(email => email !== emailToRemove));
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addEmail();
+    }
+  };
 
   const handleSubmit = async e => {
     e.preventDefault();
-    const emails = editorEmails
-      .split(",")
-      .map(s => s.trim())
-      .filter(s => s.length > 0);
 
     if (!listName.trim()) {
       setError("O nome da lista é obrigatório.");
@@ -32,6 +48,7 @@ export default function CreateListPage() {
         },
         body: JSON.stringify({
           nome: listName.trim(),
+          editores: emailList.map(email => email.trim()),
         }),
       });
       if (!res.ok) {
@@ -69,15 +86,44 @@ export default function CreateListPage() {
 
             <label className="form-label">
               E-mails que podem editar
-              <input
-                className="form-input"
-                type="text"
-                value={editorEmails}
-                onChange={e => setEditorEmails(e.target.value)}
-                placeholder="Ex: Ciclano@gmail.com"
-              />
+              <div className="email-input-container">
+                <input
+                  className="form-input"
+                  type="email"
+                  value={editorEmails}
+                  onChange={e => setEditorEmails(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  placeholder="Digite um e-mail e pressione Enter"
+                />
+                <button 
+                  type="button" 
+                  className="btn-add-email"
+                  onClick={addEmail}
+                  disabled={!editorEmails.trim()}
+                >
+                  Adicionar
+                </button>
+              </div>
+              
+              {emailList.length > 0 && (
+                <div className="email-list">
+                  {emailList.map((email, index) => (
+                    <span key={index} className="email-tag">
+                      {email}
+                      <button 
+                        type="button" 
+                        className="email-remove"
+                        onClick={() => removeEmail(email)}
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+              
               <small className="form-help">
-                Insira e-mails separados por vírgula
+                Digite um e-mail e pressione Enter ou clique em Adicionar
               </small>
             </label>
 
