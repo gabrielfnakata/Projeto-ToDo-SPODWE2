@@ -413,6 +413,7 @@ const filterByDate = (t) => {
           <ul className="todos-list">
             {todos
               .filter(filterBy)
+              .filter(filterByDate)
               .map((t,i) => (
                 <TodoItem 
                   key={i} 
