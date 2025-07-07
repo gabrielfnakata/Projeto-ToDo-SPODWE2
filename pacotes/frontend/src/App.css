@@ -560,15 +560,14 @@ margin-bottom: 10px;
 }
 .carousel-wrapper {
   position: relative;
-  margin: 60px auto;       /* ajuste vertical conforme precisar */
+  margin: 60px auto;
   width: 90%;
-  max-width: 1200px;        /* limite de largura */
-  overflow: visible;        /* permite mostrar as setas além dos cards */
+  max-width: 1200px; 
+  overflow: visible;
   padding: 0 20px;
   min-height: 200px;
 }
 
-/* === Track Rolável === */
 .carousel-track {
   display: flex;
   gap: 16px;
@@ -792,4 +791,10 @@ margin-bottom: 10px;
 
 .email-remove:hover {
   color: #dc9435;
+}
+.compartilhada {
+  font-size: 12;
+  color:#888;
+  margin-top: 4;
+  text-align: center;
 }
