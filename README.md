@@ -2,6 +2,13 @@
 
 Um aplicativo de lista de tarefas com autenticação, construído com React, Node.js e SQLite3.
 
+# Alunos
+
+Arthur Pacheco - SP3123022 -> arthurpachecof
+Gabriel Nakata - SP3119548 -> gabrielfnakata
+Glauco Condo - SP3123073 -> glaucolucca
+Maria Luisa - SP3124444 -> mluisa-aquino
+
 ## 🚀 Configuração do Projeto
 
 ### Pré-requisitos
