@@ -1,6 +1,6 @@
 body {
   font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
+  background-color: #f5f1e9;
   margin: 0;
   padding: 0;
   min-height: 100vh;
@@ -10,13 +10,14 @@ body {
 }
 h1 {
   text-align: center;
+  color: #1d1406;
 }
 ul {
   list-style: none;
   padding: 0;
 }
 li {
-  background: #f9f9f9;
+  background: #f7f5f3;
   margin: 5px 0;
   padding: 10px;
   border-radius: 3px;
@@ -32,7 +33,7 @@ button {
   cursor: pointer;
 }
 button:hover {
-  background: #10203a;
+  background: #9e661e;
 }
 input[type="text"] {
   width: calc(100% - 22px);
@@ -83,7 +84,7 @@ input[type="text"] {
 text-align: center;
 font-weight: 900;
 font-size: 30px;
-color: rgb(16, 137, 211);
+color: rgb(100, 63, 8);
 }
 
 .form {
@@ -97,7 +98,7 @@ border: none;
 padding: 15px 20px;
 border-radius: 20px;
 margin-top: 15px;
-box-shadow: #cff0ff 0px 10px 10px -5px;
+box-shadow: #d8c6b2 0px 10px 10px -5px;
 border-inline: 2px solid transparent;
 }
 
@@ -111,7 +112,7 @@ color: rgb(170, 170, 170);
 
 .form .input:focus {
 outline: none;
-border-inline: 2px solid #12b1d1;
+border-inline: 2px solid #d17812;
 }
 
 .form .forgot-password {
@@ -122,7 +123,7 @@ margin-left: 10px;
 
 .form .forgot-password a {
 font-size: 11px;
-color: #0099ff;
+color: #86520f;
 text-decoration: none;
 }
 
@@ -132,14 +133,14 @@ width: 100%;
 font-weight: bold;
 background: linear-gradient(
   45deg,
-  rgb(16, 137, 211) 0%,
-  rgb(18, 177, 209) 100%
+  rgb(206, 145, 53) 0%,
+  rgb(252, 175, 103) 100%
 );
 color: white;
 padding-block: 15px;
 margin: 20px auto;
 border-radius: 20px;
-box-shadow: rgba(133, 189, 215, 0.8784313725) 0px 20px 10px -15px;
+box-shadow: rgba(158, 82, 20, 0.878) 0px 20px 10px -15px;
 border: none;
 transition: all 0.2s ease-in-out;
 cursor: pointer;
@@ -154,65 +155,6 @@ box-shadow: rgba(133, 189, 215, 0.8784313725) 0px 23px 10px -20px;
 transform: scale(0.95);
 box-shadow: rgba(133, 189, 215, 0.8784313725) 0px 15px 10px -10px;
 }
-
-.social-account-container {
-margin-top: 25px;
-}
-
-.social-account-container .title {
-display: block;
-text-align: center;
-font-size: 10px;
-color: rgb(170, 170, 170);
-}
-
-.social-account-container .social-accounts {
-width: 100%;
-display: flex;
-justify-content: center;
-gap: 15px;
-margin-top: 5px;
-}
-
-.social-account-container .social-accounts .social-button {
-background: linear-gradient(45deg, rgb(0, 0, 0) 0%, rgb(112, 112, 112) 100%);
-border: 5px solid white;
-padding: 5px;
-border-radius: 50%;
-width: 40px;
-aspect-ratio: 1;
-display: grid;
-place-content: center;
-box-shadow: rgba(133, 189, 215, 0.8784313725) 0px 12px 10px -8px;
-transition: all 0.2s ease-in-out;
-cursor: pointer;
-}
-
-.social-account-container .social-accounts .social-button .svg {
-fill: white;
-margin: auto;
-}
-
-.social-account-container .social-accounts .social-button:hover {
-transform: scale(1.2);
-}
-
-.social-account-container .social-accounts .social-button:active {
-transform: scale(0.9);
-}
-
-.agreement {
-display: block;
-text-align: center;
-margin-top: 15px;
-}
-
-.agreement a {
-text-decoration: none;
-color: #0099ff;
-font-size: 9px;
-}
-
 .error-message {
 color: #ff6b6b;
 font-size: 0.9em;
@@ -228,7 +170,7 @@ margin-bottom: 10px;
   left: 15px;
   right: 15px;
   z-index: 1000;
-  background: #90a4ae;
+  background: #8f5f21;
   padding: 12px 24px;
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   display: flex;
@@ -247,27 +189,27 @@ margin-bottom: 10px;
 }
 @media (max-width: 768px) {
   .navbar {
-    flex-direction: column;   /* empilha logo + grupos */
-    align-items: center;      /* centraliza tudo */
-    height: auto;             /* ajusta altura conforme conteúdo */
-    padding: 12px;            /* reduz margens laterais */
+    flex-direction: column;   
+    align-items: center;      
+    height: auto;             
+    padding: 12px;            
   }
 
   .navbar-left,
   .navbar-right {
-    width: 100%;              /* ocupam linha inteira */
-    justify-content: center;  /* centralizam botões */
-    margin: 8px 0;            /* espaçamento vertical */
+    width: 100%;              
+    justify-content: center;  
+    margin: 8px 0;            
   }
 
   .logo {
-    margin: 0 0 8px 0;        /* separa do grupo de botões */
+    margin: 0 0 8px 0;        
   }
 
   .nav-button {
-    padding: 8px 16px;        /* botões menores */
-    font-size: 1rem;          /* fonte ajustada */
-    margin-right: 0;          /* remove margem extra */
+    padding: 8px 16px;        
+    font-size: 1rem;          
+    margin-right: 0;       
   }
 }
 .logo {
@@ -277,7 +219,7 @@ margin-bottom: 10px;
 }
 
 .nav-button {
-  background: #607d8b;
+  background: #af772e;
   color: #fff;
   border: none;
   border-radius: 6px;
@@ -290,23 +232,21 @@ margin-bottom: 10px;
 }
 .nav-button:hover {
   padding: 15px 30px;
-  background: #546e7a;
+  background: #533713;
 }
 
 .nav-button:last-child {
   margin-right: 0;
 }
-/* App.css */
 
-/* container horizontal scroll */
 .todo-container {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
   gap: 24px;
-  padding: 200px 24px 24px; /* ajusta padding-top conforme navbar */
-  overflow-x: auto;          /* permite rolar na direção horizontal */
-  scrollbar-width: thin;     /* Firefox */
+  padding: 200px 24px 24px; 
+  overflow-x: auto;          
+  scrollbar-width: thin;     
 }
 .todo-container::-webkit-scrollbar {
   height: 8px;
@@ -316,7 +256,6 @@ margin-bottom: 10px;
   border-radius: 4px;
 }
 
-/* cards fixos (não encolhem) */
 .todo-card {
   flex: 0 0 auto;
   background: #fff;
@@ -332,20 +271,6 @@ margin-bottom: 10px;
   transform: scale(1.03);
 }
 
-/* card “+” */
-.add-card {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #66bb6a;
-}
-.add-card .add-icon {
-  font-size: 3rem;
-  color: #fff;
-  line-height: 1;
-}
-
-/* remova o flex-wrap anterior se existir */
 .todo-container {
   flex-wrap: nowrap;
 }
@@ -353,7 +278,7 @@ margin-bottom: 10px;
 .todo-card h2 {
   text-align: center;
   margin: 0 0 16px;
-  color: #162931;
+  color: #291e0d;
 }
 
 
@@ -365,7 +290,7 @@ margin-bottom: 10px;
   margin-bottom: 16px;
 }
 .todo-filter button {
-  background: #607d8b;
+  background: #af772e;
   color: #fff;
   border: none;
   border-radius: 12px;
@@ -376,14 +301,14 @@ margin-bottom: 10px;
   font-weight: bold;
 }
 .todo-filter button:hover {
-  background: #546e7a;
+  background: #442e11;
 }
 .filter-select {
   padding: 18px 20px;
   border-radius: 12px;
   border: none;
-  background: #d0dee6;
-  color: #162931;
+  background: #f1efec;
+  color: #312416;
   cursor: pointer;
   font-size: 1.1rem;
   font-weight: bold;
@@ -400,13 +325,13 @@ margin-bottom: 10px;
   padding: 18px 20px;
   border: none;
   border-radius: 6px;
-  background: #eceff1;
+  background: #f1efec;
   font-size: 1.1rem;
 
 }
 
 .add-todo-button {
-  background: #607d8b;
+  background: #8f5f21a8;
   color: #fff;
   border: none;
   border-radius: 12px;
@@ -416,10 +341,9 @@ margin-bottom: 10px;
   transition: background .2s;
 }
 .add-todo-button:hover {
-  background: #546e7a;
+  background: #74674c;
 }
 
-/* Lista de itens */
 .todos-list {
   list-style: none;
   padding: 0;
@@ -446,16 +370,14 @@ margin-bottom: 10px;
   font-size: 0.9em;
 }
 .todo-done-button {
-  background: #90a4ae;
+  background: #aea490;
   color: #fff;
   border: none;
   border-radius: 6px;
-  padding: 4px 8px;
   cursor: pointer;
-  transition: background .2s;
-}
-.todo-done-button:hover {
-  background: #78909c;
+  transition: background .2s;                  
+  padding: 8px 20px;          
+  font-size: 1rem;
 }
 .todo-item.done .todo-text {
   text-decoration: line-through;
@@ -463,18 +385,20 @@ margin-bottom: 10px;
 }
 
 .todo-start-button {
-  background: #66bb6a; /* verde suave */
+  background: #9abb66;
   color: #fff;
   border: none;
   border-radius: 6px;
-  padding: 4px 8px;
   cursor: pointer;
   transition: background 0.2s;
-  margin-right: 8px;
+  margin-right: 8px; 
+  padding: 6px 20px;
+  font-size: 1rem;
 }
 
 .todo-start-button:hover {
-  background: #558b2f; /* verde mais escuro no hover */
+  background: #475a24;
+  transform: translateY(-1px);
 }
 
 .small-card {
@@ -507,7 +431,7 @@ margin-bottom: 10px;
   display: flex;
   flex-direction: column;
   font-weight: bold;
-  color: #162931;
+  color: #312816;
 }
 
 .form-input {
@@ -536,12 +460,12 @@ margin-bottom: 10px;
 }
 
 .btn-primary {
-  background: #607d8b;
+  background: #ad7e40;
   color: #fff;
 }
 
 .btn-primary:hover {
-  background: #546e7a;
+  background: #8f5e30;
 }
 
 .btn-secondary {
@@ -581,8 +505,7 @@ margin-bottom: 10px;
 }
 
 .form-input {
-  margin-top: 8px;
-  padding: 10px 12px;
+  padding: 25px 12px;
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 1rem;
@@ -612,19 +535,19 @@ margin-bottom: 10px;
 }
 
 .btn-primary {
-  background: #607d8b;
+  background: #96621e;
   color: #fff;
 }
 .btn-primary:hover {
-  background: #546e7a;
+  background: #795115;
 }
 
 .btn-secondary {
-  background: #eceff1;
+  background: #f1efec;
   color: #162931;
 }
 .btn-secondary:hover {
-  background: #cfd8dc;
+  background: #dcd8cf;
 }
 
 .todos-page {
@@ -635,61 +558,49 @@ margin-bottom: 10px;
   justify-content: center;
   align-items: start;
 }
-
 .carousel-wrapper {
   position: relative;
-  margin: 100px auto 24px; 
-  width: 90%;           /* antes: 100% (com max-width) – agora limita a 90% da viewport */
-  max-width: none;      /* remove o limite de 848px */
-  overflow: visible;
-  padding: 0 60px;      /* espaço maior para as setas */
+  margin: 60px auto;       /* ajuste vertical conforme precisar */
+  width: 90%;
+  max-width: 1200px;        /* limite de largura */
+  overflow: visible;        /* permite mostrar as setas além dos cards */
+  padding: 0 20px;
+  min-height: 200px;
 }
 
+/* === Track Rolável === */
 .carousel-track {
   display: flex;
   gap: 16px;
   overflow-x: auto;
   scroll-behavior: smooth;
-  padding: 8px 0;
+  -webkit-overflow-scrolling: touch;
   margin-top: 200px;
+  padding: 0;
+  min-height: 400px;
 }
 
 .carousel-track::-webkit-scrollbar { display: none; }
 .carousel-track { -ms-overflow-style: none; scrollbar-width: none; }
 
 .carousel-track .todo-card {
-  flex: 0 0 350px;      /* base mais larga para mostrar menos cards por vez */
-  min-height: 500px;    /* altura bem maior */
-  margin: 0 12px;       /* espaçamento lateral interno */
+  flex: 0 0 calc((100% - (var(--visible) - 1) * 16px) / var(--visible));
+  max-width: calc((100% - (var(--visible) - 1) * 16px) / var(--visible));
   box-sizing: border-box;
-}
-@media (max-width: 1200px) {
-  .carousel-wrapper {
-    width: 95%;
-    padding: 0 40px;
-  }
-  .carousel-track .todo-card {
-    flex: 0 0 300px;
-    min-height: 450px;
-  }
+  min-height: 280px;
 }
 
-@media (max-width: 768px) {
-  .carousel-wrapper {
-    width: 100%;
-    padding: 0 20px;
-  }
-  .carousel-track .todo-card {
-    flex: 0 0 250px;
-    min-height: 350px;
-  }
+.carousel-track > .todo-card:only-child {
+  flex: 0 0 300px;
+  max-width: 300px;
+  margin: 0 auto;
 }
+
 .carousel-arrow {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(96,125,139,0.8);
-  /* você pode aumentar um pouco o tamanho se quiser: */
+  background: rgba(175, 128, 58, 0.8);
   width: 40px;
   height: 60px;
   font-size: 2.5rem;
@@ -698,7 +609,7 @@ margin-bottom: 10px;
 }
 
 .carousel-arrow.left {
-  left: 0;                 /* “gruda” na margem interna do padding */
+  left: 0;                 
   transform: translate(-100%, -50%);
 }
 .carousel-arrow.right {
@@ -711,7 +622,7 @@ margin-bottom: 10px;
 }
 
 .todo-card.add-card {
-  background: #66bb6a !important;
+  background: #a1bb66 !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -721,7 +632,6 @@ margin-bottom: 10px;
   color: #fff;
 }
 
-/* título maior, centralizado e truncado */
 .todo-card h3 {
   font-size: clamp(1.5rem, 4vw, 2rem);
   text-align: center;
@@ -752,108 +662,83 @@ margin-bottom: 10px;
   text-decoration: line-through;
   color: #888;           
 }
-/* Centraliza o prompt e dá mais destaque */
+
 .login-prompt {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 
-  /* ocupa toda a área abaixo da navbar */
-  min-height: calc(100vh - 60px); /* ajuste 60px para a altura real da sua navbar */
+  min-height: calc(100vh - 60px);
   padding: 20px;
   text-align: center;
 }
 
 .login-prompt p {
-  font-size: 1.5rem;      /* texto maior */
-  margin-bottom: 1.5rem;  /* espaçamento */
+  font-size: 1.5rem;      
+  margin-bottom: 1.5rem;  
   color: #333;
 }
 
 .login-prompt .nav-button {
-  font-size: 1.125rem;    /* botão maior */
-  padding: 0.75em 2em;     /* mais “gordura” */
+  font-size: 1.125rem;    
+  padding: 0.75em 2em;     
 }
 
-/* ===== Tags como “pills” ===== */
 .todo-tags {
-  background: rgb(224, 233, 250);        /* fundo suave */
-  color: #006064;             /* texto contrastante */
-  padding: 8px;          /* tamanho confortável */
-  border-radius: 12px;        /* bordas arredondadas */
-  font-size: 1rem;         /* menor que o texto principal */
-  margin: 0 12px;             /* espaço à esquerda e direita */
-  display: inline-block;      /* para respeitar padding e margin */
+  background: rgb(240, 230, 214);        
+  color: #2e4b09;             
+  padding: 8px;          
+  border-radius: 12px;        
+  font-size: 1rem;         
+  margin: 0 12px;             
+  display: inline-block;      
 }
 
-/* ===== Espaçamento extra para data e botões ===== */
 .todo-date {
   font-size: 1rem;
-  background: #eaebf1;
+  background: rgb(240, 230, 214);
   border-radius: 12px;
   padding: 8px;
   color: #555;
-  margin-left: 12px;          /* separa da tags/texto */
-  margin-right: 16px;         /* afasta dos botões */
+  margin-left: 12px;          
+  margin-right: 16px;         
 }
 
 .todo-date.due-soon {
-  background-color: #f39c12; /* amarelo */
+  background-color: #f3c377;
 }
 
 .todo-date.due-passed {
-  background-color: #e74c3c; /* vermelho */
+  background-color: #f08666;
 }
 
 .todo-controls {
   display: flex;
   align-items: center;
-  gap: 16px;                  /* espaço uniforme entre botões */
+  gap: 16px;                  
 }
 
-/* garante que cada botão do controle tenha espaço próprio */
-.todo-start-button{
-  margin-right: 8px;  /* ajuste esse valor pra mais ou pra menos */
-  padding: 6px 14px;
-  font-size: 1rem;
-}
-
-
-.todo-done-button {
-  margin: 0;                  /* limpe margens anteriores */
-  padding: 6px 14px;          /* deixa todos iguais */
-  font-size: 0.80rem;
-}
-
-/* opcional: hover states com leve “respingo” */
-.todo-start-button:hover {
-  background: #558b2f;
-  transform: translateY(-1px);
-  
-}
 .todo-done-button:hover {
-  background: #78909c;
+  background: #484b35;
   transform: translateY(-1px);
 }
 
 .todos-page {
   background: transparent;
   min-height: 100vh;
-  padding-top: 130px;       /* mantém o gap de 130px sob a navbar */
+  padding-top: 130px;       
   display: flex;
   justify-content: center;
   align-items: flex-start;
 }
 
-/* ---- Card: sem margin-top, já é empurrado pela padding acima ---- */
 .todos-card {
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 8px 12px rgba(0,0,0,0.1);
   padding: 24px;
-
-  margin: 0;                /* zera qualquer margin-top */
+  margin: 0;                
   min-width: 1000px;
 }
 
@@ -865,10 +750,10 @@ margin-bottom: 10px;
 
 .btn-add-email {
   padding: 8px 12px;
-  background: #007bff;
+  background: #ad7535;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
   white-space: nowrap;
 }
@@ -888,7 +773,7 @@ margin-bottom: 10px;
 .email-tag {
   display: inline-flex;
   align-items: center;
-  background: #e9ecef;
+  background: #efede9;
   padding: 4px 8px;
   border-radius: 16px;
   font-size: 14px;
@@ -906,5 +791,5 @@ margin-bottom: 10px;
 }
 
 .email-remove:hover {
-  color: #dc3545;
+  color: #dc9435;
 }

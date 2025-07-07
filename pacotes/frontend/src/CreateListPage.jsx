@@ -73,7 +73,7 @@ export default function CreateListPage() {
           {error && <p className="form-error">{error}</p>}
           <form className="create-list-form" onSubmit={handleSubmit}>
             <label className="form-label">
-              Nome da Lista
+              <h2>Nome da Lista:</h2>
               <input
                 className="form-input"
                 type="text"
@@ -85,7 +85,7 @@ export default function CreateListPage() {
             </label>
 
             <label className="form-label">
-              E-mails que podem editar
+              <h2>E-mails que podem editar:</h2>
               <div className="email-input-container">
                 <input
                   className="form-input"

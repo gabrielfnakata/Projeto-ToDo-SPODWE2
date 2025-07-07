@@ -53,7 +53,7 @@ const AddTodo = ({ token, fetchTodos, listId }) => {
           texto: textoTrim,
           data_criacao: new Date().toISOString(),
           data_vencimento: dataVencimento
-            ? new Date(dataVencimento).toISOString()
+            ? new Date(`${dataVencimento}T00:00:00`).toISOString()
             : null,
           tags: tagsArray,
           id_lista: listId,
@@ -178,8 +178,8 @@ const TodoFilter = ({ setFilter, setTagFilter, tagsDisponiveis, dateFilter, setD
         value={dateFilter}
         onChange={(e) => {
           setDateFilter(e.target.value);
-          setFilter("");       // limpa filtro de status
-          setTagFilter("");    // limpa filtro de tags
+          setFilter("");       
+          setTagFilter("");    
         }}
       >
         <option value="">Data ▾</option>
@@ -193,7 +193,7 @@ const TodoFilter = ({ setFilter, setTagFilter, tagsDisponiveis, dateFilter, setD
             onDeleteList();
           }
         }}
-        style={{ marginLeft: 8, background: "#e53935", color: "#fff" }}
+        style={{ marginLeft: 8, background: "#ad4c36", color: "#fff" }}
       >
         Excluir Lista
       </button>
@@ -202,13 +202,11 @@ const TodoFilter = ({ setFilter, setTagFilter, tagsDisponiveis, dateFilter, setD
 };
 
 const TodoItem = ({ todo, updateTodoStatus }) => {
-  // formata dd/mm/yyyy
   const formataData = (data) => {
     const [yyyy, mm, dd] = data.split("T")[0].split("-");
     return `${dd}/${mm}/${yyyy}`;
   };
 
-  // calcula diferença em dias entre hoje e data de vencimento
   const calculaDias = (data) => {
     const hoje = new Date();
     const fim = new Date(data);

@@ -46,9 +46,12 @@ export default function NavBar() {
           <img src="/imagens/bloco.png" alt="Logo" className="logo" />
         </Link>
         <Link to="/home">
+          <button className="nav-button">Todos as To-dos</button>
+        </Link>
+        <Link to="/home?filtro=propria">
           <button className="nav-button">Minhas To-Dos</button>
         </Link>
-        <Link to="/homecompartilhadas">
+        <Link to="/home?filtro=compartilhada">
           <button className="nav-button">To-Dos Compartilhadas</button>
         </Link>
       </div>
