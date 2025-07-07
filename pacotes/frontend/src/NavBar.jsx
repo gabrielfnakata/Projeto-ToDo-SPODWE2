@@ -46,13 +46,13 @@ export default function NavBar() {
           <img src="/imagens/bloco.png" alt="Logo" className="logo" />
         </Link>
         <Link to="/home">
-          <button className="nav-button">Todos as To-dos</button>
+          <button className="nav-button">Todos as Listas</button>
         </Link>
         <Link to="/home?filtro=propria">
-          <button className="nav-button">Minhas To-Dos</button>
+          <button className="nav-button">Minhas Listas</button>
         </Link>
         <Link to="/home?filtro=compartilhada">
-          <button className="nav-button">To-Dos Compartilhadas</button>
+          <button className="nav-button">Listas Compartilhadas</button>
         </Link>
       </div>
 
