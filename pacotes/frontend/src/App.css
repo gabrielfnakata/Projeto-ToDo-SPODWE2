@@ -25,7 +25,6 @@ li {
   align-items: center;
 }
 button {
-  background: #ff6347;
   border: none;
   color: white;
   padding: 5px 10px;
@@ -33,7 +32,7 @@ button {
   cursor: pointer;
 }
 button:hover {
-  background: #ff4500;
+  background: #10203a;
 }
 input[type="text"] {
   width: calc(100% - 22px);
@@ -221,7 +220,7 @@ margin-bottom: 10px;
 }
 
 .navbar {
-  height: 70px;           
+  height: 80px;           
   padding: 0 24px;      
   position: fixed;
   top: 10px ;
@@ -458,9 +457,9 @@ margin-bottom: 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 0;
+  padding: 16px;
   border-bottom: 1px solid #ddd;
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   
 }
 .todo-item:last-child {
@@ -802,4 +801,65 @@ margin-bottom: 10px;
 .login-prompt .nav-button {
   font-size: 1.125rem;    /* botão maior */
   padding: 0.75em 2em;     /* mais “gordura” */
+}
+
+/* ===== Tags como “pills” ===== */
+.todo-tags {
+  background: rgb(224, 233, 250);        /* fundo suave */
+  color: #006064;             /* texto contrastante */
+  padding: 8px;          /* tamanho confortável */
+  border-radius: 12px;        /* bordas arredondadas */
+  font-size: 1rem;         /* menor que o texto principal */
+  margin: 0 12px;             /* espaço à esquerda e direita */
+  display: inline-block;      /* para respeitar padding e margin */
+}
+
+/* ===== Espaçamento extra para data e botões ===== */
+.todo-date {
+  font-size: 1rem;
+  background: #eaebf1;
+  border-radius: 12px;
+  padding: 8px;
+  color: #555;
+  margin-left: 12px;          /* separa da tags/texto */
+  margin-right: 16px;         /* afasta dos botões */
+}
+
+.todo-date.due-soon {
+  color: #f39c12; /* amarelo */
+}
+
+.todo-date.due-passed {
+  color: #e74c3c; /* vermelho */
+}
+
+.todo-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;                  /* espaço uniforme entre botões */
+}
+
+/* garante que cada botão do controle tenha espaço próprio */
+.todo-start-button{
+  margin-right: 8px;  /* ajuste esse valor pra mais ou pra menos */
+  padding: 6px 14px;
+  font-size: 1rem;
+}
+
+
+.todo-done-button {
+  margin: 0;                  /* limpe margens anteriores */
+  padding: 6px 14px;          /* deixa todos iguais */
+  font-size: 0.80rem;
+}
+
+/* opcional: hover states com leve “respingo” */
+.todo-start-button:hover {
+  background: #558b2f;
+  transform: translateY(-1px);
+  
+}
+.todo-done-button:hover {
+  background: #78909c;
+  transform: translateY(-1px);
 }

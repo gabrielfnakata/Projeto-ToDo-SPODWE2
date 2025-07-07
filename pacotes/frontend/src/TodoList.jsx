@@ -1,11 +1,10 @@
-import { useState, useEffect } from "react";
+// TodoList.jsx
+import React, { useState, useEffect } from "react";
 import NavBar from "./NavBar";
 import { useLocation } from "react-router-dom";
 
 const useAuth = () => {
-  const [token, setToken] = useState(() => {
-    return localStorage.getItem("token");
-  });
+  const [token, setToken] = useState(() => localStorage.getItem("token"));
 
   const login = async (email, senha) => {
     try {
@@ -13,14 +12,14 @@ const useAuth = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Accept": "application/json"
+          Accept: "application/json",
         },
         body: JSON.stringify({ email, senha }),
       });
-      if (!response.ok) throw new Error('Login falhou');
+      if (!response.ok) throw new Error("Login falhou");
       const data = await response.json();
       setToken(data.token);
-      localStorage.setItem("token", data.token); 
+      localStorage.setItem("token", data.token);
     } catch (error) {
       console.error("Login error:", error);
       throw error;
@@ -39,19 +38,24 @@ const AddTodo = ({ token, fetchTodos, listId }) => {
     event.preventDefault();
     if (!listId) return;
     const textoTrim = texto.trim();
-    const tagsArray = tags.split(",").map(t => t.trim()).filter(t => t.length > 0);
+    const tagsArray = tags
+      .split(",")
+      .map((t) => t.trim())
+      .filter((t) => t.length > 0);
 
     if (textoTrim && listId) {
       await fetch("http://localhost:3000/todos", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           texto: textoTrim,
           data_criacao: new Date().toISOString(),
-          data_vencimento: dataVencimento ? new Date(dataVencimento).toISOString() : null,
+          data_vencimento: dataVencimento
+            ? new Date(dataVencimento).toISOString()
+            : null,
           tags: tagsArray,
           id_lista: listId,
         }),
@@ -86,10 +90,14 @@ const AddTodo = ({ token, fetchTodos, listId }) => {
         type="date"
         value={dataVencimento}
         onChange={(e) => setDataVencimento(e.target.value)}
-        min={new Date().toISOString().split('T')[0]}
+        min={new Date().toISOString().split("T")[0]}
         disabled={!listId}
       />
-      <button className="add-todo-button" type="submit" disabled={!listId}>
+      <button
+        className="add-todo-button"
+        type="submit"
+        disabled={!listId}
+      >
         Confirmar
       </button>
     </form>
@@ -114,23 +122,40 @@ const TodoFilter = ({ setFilter, setTagFilter, tagsDisponiveis }) => {
 
   return (
     <div className="todo-filter">
-      <button id="filter-all" onClick={handleFilterClick}>Todos os Itens</button>
-      <button id="filter-done" onClick={handleFilterClick}>Concluídos</button>
-      <button id="filter-pending" onClick={handleFilterClick}>Pendentes</button>
-      <button id="filter-em andamento" onClick={handleFilterClick}>Em andamento</button>
-      <select className="filter-select" value={tag} onChange={handleTagChange}>
+      <button id="filter-all" onClick={handleFilterClick}>
+        Todos os Itens
+      </button>
+      <button id="filter-done" onClick={handleFilterClick}>
+        Concluídos
+      </button>
+      <button id="filter-pending" onClick={handleFilterClick}>
+        Pendentes
+      </button>
+      <button id="filter-em andamento" onClick={handleFilterClick}>
+        Em andamento
+      </button>
+      <select
+        className="filter-select"
+        value={tag}
+        onChange={handleTagChange}
+      >
         <option value="">Tags ▾</option>
-        {tagsDisponiveis.map((t,i) => (
-          <option key={i} value={t}>{t}</option>
+        {tagsDisponiveis.map((t, i) => (
+          <option key={i} value={t}>
+            {t}
+          </option>
         ))}
       </select>
       <button
         onClick={() => {
-          if (window.confirm("Tem certeza que deseja excluir esta lista?")) {
-            onDeleteList();
+          if (
+            window.confirm("Tem certeza que deseja excluir esta lista?")
+          ) {
+            // onDeleteList placeholder
+            console.log("Excluir lista");
           }
         }}
-        style={{ marginLeft: 8, background: "#e53935" }}
+        style={{ marginLeft: 8, background: "#e53935", color: "#fff" }}
       >
         Excluir Lista
       </button>
@@ -138,11 +163,32 @@ const TodoFilter = ({ setFilter, setTagFilter, tagsDisponiveis }) => {
   );
 };
 
-const TodoItem = ({ todo, markTodoAsDone, updateTodoStatus }) => {
+const TodoItem = ({ todo, updateTodoStatus }) => {
+  // formata dd/mm/yyyy
   const formataData = (data) => {
-    const dataSeparada = data.split("T")[0].split("-");
-    return `${dataSeparada[2]}/${dataSeparada[1]}/${dataSeparada[0]}`
+    const [yyyy, mm, dd] = data.split("T")[0].split("-");
+    return `${dd}/${mm}/${yyyy}`;
   };
+
+  // calcula diferença em dias entre hoje e data de vencimento
+  const calculaDias = (data) => {
+    const hoje = new Date();
+    const fim = new Date(data);
+    hoje.setHours(0, 0, 0, 0);
+    fim.setHours(0, 0, 0, 0);
+    const diffMs = fim - hoje;
+    return Math.round(diffMs / (1000 * 60 * 60 * 24));
+  };
+
+  const dias = todo.data_vencimento
+    ? calculaDias(todo.data_vencimento)
+    : null;
+
+  let statusDataClass = "";
+  if (dias !== null) {
+    if (dias < 0) statusDataClass = "due-passed";
+    else if (dias <= 1) statusDataClass = "due-soon";
+  }
 
   return (
     <li className={`todo-item ${todo.status === "concluido" ? "done" : ""}`}>
@@ -151,18 +197,33 @@ const TodoItem = ({ todo, markTodoAsDone, updateTodoStatus }) => {
         <span className="todo-tags">[{todo.tags.join(", ")}]</span>
       )}
       {todo.data_vencimento && (
-        <div className="todo-date">
+        <div className={`todo-date ${statusDataClass}`}>
           📅 Vence em: {formataData(todo.data_vencimento)}
         </div>
       )}
       {todo.status === "pendente" && (
         <>
-          <button className="todo-start-button" onClick={() => updateTodoStatus(todo.id, "em andamento")}>Iniciar tarefa</button>
-          <button className="todo-done-button" onClick={() => updateTodoStatus(todo.id, "concluido")}> ✓</button>
+          <button
+            className="todo-start-button"
+            onClick={() => updateTodoStatus(todo.id, "em andamento")}
+          >
+            Iniciar tarefa
+          </button>
+          <button
+            className="todo-done-button"
+            onClick={() => updateTodoStatus(todo.id, "concluido")}
+          >
+            ✓
+          </button>
         </>
       )}
       {todo.status === "em andamento" && (
-        <button className="todo-done-button" onClick={() => updateTodoStatus(todo.id, "concluido")}>✓</button>
+        <button
+          className="todo-done-button"
+          onClick={() => updateTodoStatus(todo.id, "concluido")}
+        >
+          ✓
+        </button>
       )}
     </li>
   );
@@ -190,9 +251,13 @@ export function TodoList() {
     if (!token) return;
     let url = "http://localhost:3000/todos";
     if (filter === "tag" && tagFilter) {
-      url = `http://localhost:3000/todos/por-tag?tag=${encodeURIComponent(tagFilter)}`;
+      url = `http://localhost:3000/todos/por-tag?tag=${encodeURIComponent(
+        tagFilter
+      )}`;
     }
-    const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     const data = await res.json();
     setTodos(data);
   };
@@ -200,66 +265,45 @@ export function TodoList() {
   const updateTodoStatus = async (id, novoStatus) => {
     const res = await fetch(`http://localhost:3000/todos/${id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify({ status: novoStatus }),
     });
     const updated = await res.json();
-    setTodos((prev) => prev.map(t => t.id === updated.id ? updated : t));
+    setTodos((prev) =>
+      prev.map((t) => (t.id === updated.id ? updated : t))
+    );
   };
 
   useEffect(() => {
     if (!token || !listId) return;
     (async () => {
-      const res = await fetch(`http://localhost:3000/listas/${listId}`, { 
-        headers: { 
-          Authorization: `Bearer ${token}` 
-        } 
+      const res = await fetch(`http://localhost:3000/listas/${listId}`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
       if (res.ok) {
         const lista = await res.json();
         setNome(lista.nome);
-      } else {
-        console.error("Erro ao buscar nome da lista");
       }
     })();
   }, [listId, token]);
 
   useEffect(() => {
-    if (!token) return;
-    (async () => {
-      let url = "http://localhost:3000/todos";
-      if (filter === "tag" && tagFilter) {
-        url = `http://localhost:3000/todos/por-tag?tag=${encodeURIComponent(tagFilter)}`;
-      }
-      const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
-      const data = await res.json();
-      setTodos(data);
-    })();
+    fetchTodos();
   }, [token, filter, tagFilter]);
 
   useEffect(() => {
     if (!token) return;
     (async () => {
-      const res = await fetch("http://localhost:3000/tags", { headers: { Authorization: `Bearer ${token}` } });
+      const res = await fetch("http://localhost:3000/tags", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const tags = await res.json();
       setTagsDisponiveis(tags);
     })();
   }, [token]);
-
-  const addTodo = (newTodo) => {
-    setTodos((prev) => [...prev, newTodo]);
-    if (filter === "done") setFilter("all");
-  };
-
-  const markTodoAsDone = async (id) => {
-    const res = await fetch(`http://localhost:3000/todos/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type":"application/json", Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ status: "concluido" }),
-    });
-    const updated = await res.json();
-    setTodos((prev) => prev.map(t => t.id === updated.id ? updated : t));
-  };
 
   return (
     <>
@@ -272,8 +316,7 @@ export function TodoList() {
             setTagFilter={setTagFilter}
             tagsDisponiveis={tagsDisponiveis}
           />
-          <AddTodo 
-            addTodo={addTodo} 
+          <AddTodo
             token={token}
             fetchTodos={fetchTodos}
             listId={listId}
@@ -281,13 +324,12 @@ export function TodoList() {
           <ul className="todos-list">
             {todos
               .filter(filterBy)
-              .filter(t => String(t.id_lista) === String(listId))
-              .map((t,i) => (
-                <TodoItem 
-                  key={i} 
-                  todo={t} 
-                  markTodoAsDone={markTodoAsDone} 
-                  updateTodoStatus={updateTodoStatus} 
+              .filter((t) => String(t.id_lista) === String(listId))
+              .map((t, i) => (
+                <TodoItem
+                  key={i}
+                  todo={t}
+                  updateTodoStatus={updateTodoStatus}
                 />
               ))}
           </ul>
