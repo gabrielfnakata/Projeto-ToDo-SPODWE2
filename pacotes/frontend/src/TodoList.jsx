@@ -267,15 +267,6 @@ const TodoItem = ({ todo, updateTodoStatus }) => {
   );
 };
 
-const calculaDias = (data) => {
-  const hoje = new Date();
-  const fim = new Date(data);
-  hoje.setHours(0, 0, 0, 0);
-  fim.setHours(0, 0, 0, 0);
-  const diffMs = fim - hoje;
-  return Math.round(diffMs / (1000 * 60 * 60 * 24));
-};
-
 export function TodoList() {
   const { token } = useAuth();
   const [todos, setTodos] = useState([]);

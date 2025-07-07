@@ -207,23 +207,18 @@ export async function retornaTodosPorLista(req, res) {
         if (!lista) {
             return res.status(404).json({ error: "Lista não encontrada" });
         }
-        const todos = await getTodosPorLista(idLista);
+        const todos = await getAllTodosByList(idLista);
+        const todosComTags = await Promise.all(todos.map(async (todo) => ({
+            id: todo.id,
+            texto: todo.texto,
+            status: todo.status,
+            data_criacao: todo.data_criacao,
+            data_vencimento: todo.data_vencimento,
+            id_lista: todo.id_lista,
+            tags: await buscarTagsDoTodo(todo.id)
+        })));
 
-        return res.status(200).json({
-            id: lista.id,
-            nome: lista.nome,
-            criador: lista.criador,
-            todos: todos.map(todo => {
-                return {
-                    id: todo.id,
-                    texto: todo.texto,
-                    status: todo.status,
-                    data_criacao: todo.data_criacao,
-                    data_vencimento: todo.data_vencimento,
-                    tags: buscarTagsDoTodo(todo.id)
-                };
-            })
-        });
+        return res.status(200).json(todosComTags);
     }
     catch(err) {
         console.error('Erro ao buscar todos por lista:', err);
