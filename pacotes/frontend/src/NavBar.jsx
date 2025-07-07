@@ -1,4 +1,3 @@
-// NavBar.jsx
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./App.css";
@@ -46,7 +45,7 @@ export default function NavBar() {
           <img src="/imagens/bloco.png" alt="Logo" className="logo" />
         </Link>
         <Link to="/home">
-          <button className="nav-button">Todos as Listas</button>
+          <button className="nav-button">Todas as Listas</button>
         </Link>
         <Link to="/home?filtro=propria">
           <button className="nav-button">Minhas Listas</button>
