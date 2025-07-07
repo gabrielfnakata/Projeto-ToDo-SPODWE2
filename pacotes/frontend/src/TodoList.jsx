@@ -104,7 +104,7 @@ const AddTodo = ({ token, fetchTodos, listId }) => {
   );
 };
 
-const TodoFilter = ({ setFilter, setTagFilter, tagsDisponiveis }) => {
+const TodoFilter = ({ setFilter, setTagFilter, tagsDisponiveis, dateFilter, setDateFilter }) => {
   const [tag, setTag] = useState("");
 
   const handleFilterClick = (e) => {
@@ -145,6 +145,20 @@ const TodoFilter = ({ setFilter, setTagFilter, tagsDisponiveis }) => {
             {t}
           </option>
         ))}
+      </select>
+      <select
+        className="filter-select"
+        value={dateFilter}
+        onChange={(e) => {
+          setDateFilter(e.target.value);
+          setFilter("");       // limpa filtro de status
+          setTagFilter("");    // limpa filtro de tags
+        }}
+      >
+        <option value="">Data ▾</option>
+        <option value="today">Vence hoje</option>
+        <option value="week">Nesta semana</option>
+        <option value="month">Neste mês</option>
       </select>
       <button
         onClick={() => {
@@ -229,11 +243,21 @@ const TodoItem = ({ todo, updateTodoStatus }) => {
   );
 };
 
+const calculaDias = (data) => {
+  const hoje = new Date();
+  const fim = new Date(data);
+  hoje.setHours(0, 0, 0, 0);
+  fim.setHours(0, 0, 0, 0);
+  const diffMs = fim - hoje;
+  return Math.round(diffMs / (1000 * 60 * 60 * 24));
+};
+
 export function TodoList() {
   const { token } = useAuth();
   const [todos, setTodos] = useState([]);
   const [filter, setFilter] = useState("all");
   const [tagFilter, setTagFilter] = useState("");
+  const [dateFilter, setDateFilter] = useState("");
   const [tagsDisponiveis, setTagsDisponiveis] = useState([]);
   const [nome, setNome] = useState("Minha Lista");
   const location = useLocation();
@@ -246,6 +270,41 @@ export function TodoList() {
     if (filter === "em andamento") return t.status === "em andamento";
     return true;
   };
+
+const filterByDate = (t) => {
+  if (!dateFilter) return true;
+  if (!t.data_vencimento) return false;
+
+  const hoje       = new Date();
+  const startOfDay = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+  const dueDate    = new Date(t.data_vencimento);
+
+  if (dateFilter === "today") {
+    return (
+      dueDate.getFullYear() === startOfDay.getFullYear() &&
+      dueDate.getMonth()     === startOfDay.getMonth() &&
+      dueDate.getDate()      === startOfDay.getDate()
+    );
+  }
+
+  if (dateFilter === "week") {
+    const diaSemana = hoje.getDay();
+    const diff = 6 - diaSemana;
+    const endOfWeek = new Date(hoje);
+    endOfWeek.setDate(hoje.getDate() + diff);
+    endOfWeek.setHours(23,59,59,999);
+    return dueDate >= startOfDay && dueDate <= endOfWeek;
+  }
+
+  if (dateFilter === "month") {
+    const endOfMonth = new Date(hoje.getFullYear(), hoje.getMonth()+1, 0);
+    endOfMonth.setHours(23,59,59,999);
+    return dueDate >= startOfDay && dueDate <= endOfMonth;
+  }
+
+  return true;
+};
+
 
   const fetchTodos = async () => {
     if (!token) return;
@@ -311,11 +370,13 @@ export function TodoList() {
       <div className="todos-page">
         <div className="todos-card">
           <h1 className="todos-header">{nome}</h1>
-          <TodoFilter
-            setFilter={setFilter}
-            setTagFilter={setTagFilter}
-            tagsDisponiveis={tagsDisponiveis}
-          />
+           <TodoFilter
+              setFilter={setFilter}
+              setTagFilter={setTagFilter}
+              tagsDisponiveis={tagsDisponiveis}
+              dateFilter={dateFilter}
+              setDateFilter={setDateFilter}
+            />
           <AddTodo
             token={token}
             fetchTodos={fetchTodos}
@@ -323,7 +384,8 @@ export function TodoList() {
           />
           <ul className="todos-list">
             {todos
-              .filter(filterBy)
+              .filter(filterBy)                   // status
+              .filter(filterByDate)               // data de vencimento
               .filter((t) => String(t.id_lista) === String(listId))
               .map((t, i) => (
                 <TodoItem
