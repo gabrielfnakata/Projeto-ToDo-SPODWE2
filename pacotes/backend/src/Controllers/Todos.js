@@ -58,7 +58,7 @@ export async function criaTodo(req, res) {
         if (!dataVencimento || dataVencimento < dataCriacao) {
             const dataAtual = new Date();
             const vencimento = new Date(dataAtual);
-            vencimento.setDate(dataAtual.getDate() + 7);
+            vencimento.setDate(dataAtual.getDate());
             dataVencimento = vencimento.toISOString();
         }
         
