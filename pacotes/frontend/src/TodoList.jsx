@@ -189,11 +189,8 @@ const TodoFilter = ({ setFilter, setTagFilter, tagsDisponiveis, dateFilter, setD
       </select>
       <button
         onClick={() => {
-          if (
-            window.confirm("Tem certeza que deseja excluir esta lista?")
-          ) {
-            // onDeleteList placeholder
-            console.log("Excluir lista");
+          if (window.confirm("Tem certeza que deseja excluir esta lista?")) {
+            onDeleteList();
           }
         }}
         style={{ marginLeft: 8, background: "#e53935", color: "#fff" }}
