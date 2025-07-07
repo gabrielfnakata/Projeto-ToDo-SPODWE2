@@ -799,11 +799,11 @@ margin-bottom: 10px;
 }
 
 .todo-date.due-soon {
-  color: #f39c12; /* amarelo */
+  background-color: #f39c12; /* amarelo */
 }
 
 .todo-date.due-passed {
-  color: #e74c3c; /* vermelho */
+  background-color: #e74c3c; /* vermelho */
 }
 
 .todo-controls {
