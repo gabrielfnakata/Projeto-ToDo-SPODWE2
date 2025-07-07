@@ -429,7 +429,6 @@ const filterByDate = (t) => {
                 <TodoItem 
                   key={i} 
                   todo={t} 
-                  markTodoAsDone={markTodoAsDone} 
                   updateTodoStatus={updateTodoStatus} 
                 />
               ))}
